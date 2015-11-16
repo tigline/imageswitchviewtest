@@ -3,6 +3,7 @@ package com.example.imageswitchviewtest;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -97,14 +98,16 @@ public class Image3DSwitchView extends ViewGroup {
 			if (mCount < 5) {
 				return;
 			}
-			mWidth = getMeasuredWidth();
+			mWidth = getMeasuredWidth();  //控件实际宽度
 			mHeight = getMeasuredHeight();
+			Log.d("Image3DSwitchView", "mHeight = " + mHeight );
 			// 每张图片的宽度设定为控件宽度的百分之六十
 			mImageWidth = (int) (mWidth * 0.6);
 			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
 				mScroller.abortAnimation();
 				setScrollX(0);
 				int left = -mImageWidth * 2 + (mWidth - mImageWidth) / 2;
+				Log.d("Image3DSwitchView", "left = " + left );
 				// 分别获取每个位置上应该显示的图片下标
 				int[] items = { getIndexForItem(1), getIndexForItem(2),
 						getIndexForItem(3), getIndexForItem(4),
@@ -117,6 +120,7 @@ public class Image3DSwitchView extends ViewGroup {
 							+ mImageWidth - IMAGE_PADDING, mHeight);
 					childView.initImageViewBitmap();
 					left = left + mImageWidth;
+					Log.d("Image3DSwitchView", "left = " + left );
 				}
 				refreshImageShowing();
 			}
@@ -288,7 +292,7 @@ public class Image3DSwitchView extends ViewGroup {
 			public void run() {
 				if (action == SCROLL_NEXT || action == SCROLL_PREVIOUS) {
 					forceToRelayout = true;
-					requestLayout();
+					requestLayout();//当一个View需要parent view重新调用他的onMeasure onLayout来对重新设置自己位置
 				}
 			}
 		}, duration);

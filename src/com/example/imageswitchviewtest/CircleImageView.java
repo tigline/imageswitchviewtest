@@ -65,7 +65,7 @@ public class CircleImageView extends ImageView {
 
     public CircleImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        super.setScaleType(SCALE_TYPE);
+        super.setScaleType(SCALE_TYPE);  
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyle, 0);
 
