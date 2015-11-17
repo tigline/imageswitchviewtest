@@ -6,7 +6,7 @@
 
     
       
-      
+    <!--   
     <com.example.imageswitchviewtest.CircleImage3DSwitchView
         android:id="@+id/image_switch_view_clone"
         android:layout_width="match_parent"
@@ -76,12 +76,11 @@
         	app:border_color="@color/light" />
         
     </com.example.imageswitchviewtest.CircleImage3DSwitchView>
-    
+     -->
     <com.example.imageswitchviewtest.Image3DSwitchView
         android:id="@+id/image_switch_view"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_below="@+id/image_switch_view_clone" >
+        android:layout_width="150dp"
+        android:layout_height="match_parent" >
 
         <com.example.imageswitchviewtest.Image3DView
             android:id="@+id/image8"

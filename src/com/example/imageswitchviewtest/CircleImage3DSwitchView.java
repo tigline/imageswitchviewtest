@@ -3,6 +3,7 @@ package com.example.imageswitchviewtest;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -99,12 +100,14 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			}
 			mWidth = getMeasuredWidth();
 			mHeight = getMeasuredHeight();
+			Log.d("CircleImage3DSwitchView", "mHeight = " + mHeight );
 			// 每张图片的宽度设定为控件宽度的百分之六十
 			mImageWidth = (int) (mWidth * 0.6);
 			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
 				mScroller.abortAnimation();
 				setScrollX(0);
 				int left = -mImageWidth * 2 + (mWidth - mImageWidth) / 2;
+				Log.d("CircleImage3DSwitchView", "left = " + left );
 				// 分别获取每个位置上应该显示的图片下标
 				int[] items = { getIndexForItem(1), getIndexForItem(2),
 						getIndexForItem(3), getIndexForItem(4),
@@ -117,6 +120,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 							+ mImageWidth - IMAGE_PADDING, mHeight);
 					childView.initImageViewBitmap();
 					left = left + mImageWidth;
+					Log.d("CircleImage3DSwitchView", "left = " + left );
 				}
 				refreshImageShowing();
 			}
@@ -203,7 +207,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		if (mScroller.computeScrollOffset()) {
 			scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
 			refreshImageShowing();
-			postInvalidate();
+			postInvalidate();  //非UI线程中刷新view
 		}
 	}
 
@@ -320,7 +324,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		for (int i = 0; i < mItems.length; i++) {
 			CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
 			childView.setRotateData(i, getScrollX());
-			childView.invalidate();
+			childView.invalidate();  //UI线程中刷新view
 		}
 	}
 

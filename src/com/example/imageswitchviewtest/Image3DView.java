@@ -75,7 +75,7 @@ public class Image3DView extends ImageView {
 		}
 		mLayoutWidth = Image3DSwitchView.mWidth;
 		Log.d("Image3DView", "mLayoutWidth = " + mLayoutWidth);
-		mWidth = getWidth() + Image3DSwitchView.IMAGE_PADDING * 2;
+		mWidth = getHeight() + Image3DSwitchView.IMAGE_PADDING * 2;////////
 		Log.d("Image3DView", "mWidth = " + mWidth);
 	}
 
@@ -141,7 +141,7 @@ public class Image3DView extends ImageView {
 				computeRotateData();
 				mCamera.save();
 				mCamera.translate(0.0f, 0.0f, mDeep);
-				mCamera.rotateY(mRotateDegree);
+				mCamera.rotateX(mRotateDegree);/////////
 				mCamera.getMatrix(mMaxtrix);
 				mCamera.restore();
 				mMaxtrix.preTranslate(-mDx, -getHeight() / 2);
@@ -158,7 +158,7 @@ public class Image3DView extends ImageView {
 		float degreePerPix = BASE_DEGREE / mWidth;
 		float deepPerPix = BASE_DEEP / ((mLayoutWidth - mWidth) / 2);
 		switch (mIndex) {
-		case 0:
+		case 0:  //第一张
 			mDx = mWidth;
 			mRotateDegree = 360f - (2 * mWidth + mScrollX) * degreePerPix;
 			if (mScrollX < -mWidth) {
@@ -167,7 +167,7 @@ public class Image3DView extends ImageView {
 				mDeep = (mWidth + mScrollX) * deepPerPix;
 			}
 			break;
-		case 1:
+		case 1:   //第二张 
 			if (mScrollX > 0) {
 				mDx = mWidth;
 				mRotateDegree = (360f - BASE_DEGREE) - mScrollX * degreePerPix;
@@ -183,7 +183,7 @@ public class Image3DView extends ImageView {
 				mDeep = 0;
 			}
 			break;
-		case 2:
+		case 2:  //正中显示
 			if (mScrollX > 0) {
 				mDx = mWidth;
 				mRotateDegree = 360f - mScrollX * degreePerPix;

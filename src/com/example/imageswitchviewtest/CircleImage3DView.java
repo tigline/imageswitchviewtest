@@ -114,7 +114,7 @@ public class CircleImage3DView extends ImageView {
 		mCamera = new Camera();		
 		mShaderMatrix = new Matrix();
 		
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyle, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyle, 0); //获取自定义属性
 
         mBorderWidth = a.getDimensionPixelSize(R.styleable.CircleImageView_border_width, DEFAULT_BORDER_WIDTH);
         mBorderColor = a.getColor(R.styleable.CircleImageView_border_color, DEFAULT_BORDER_COLOR);
@@ -289,11 +289,11 @@ public class CircleImage3DView extends ImageView {
     			mShaderMatrix.preTranslate(-mDx, -getHeight() / 2);
     			mShaderMatrix.postTranslate(mDx, getHeight() / 2);
 //              canvas.drawBitmap(mBitmap, mShaderMatrix, null);
-    			canvas.setMatrix(mShaderMatrix);
+//    			canvas.setMatrix(mShaderMatrix);
+    			canvas.concat(mShaderMatrix);
+    			
             	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
-                canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);
-                
-                
+                canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);         
     		
         }
             
@@ -498,7 +498,7 @@ public class CircleImage3DView extends ImageView {
         mBorderPaint.setStrokeWidth(mBorderWidth); //设置空心线宽
  
         mBitmapHeight = mBitmap.getHeight();
-        mBitmapWidth = mBitmap.getWidth();
+        mBitmapWidth = mBitmap.getWidth();  
 
         mBorderRect.set(0, 0, getWidth(), getHeight());
         mBorderRadius = Math.min((mBorderRect.height() - mBorderWidth) / 2, (mBorderRect.width() - mBorderWidth) / 2);
@@ -510,16 +510,21 @@ public class CircleImage3DView extends ImageView {
 		mWidth = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
 		Log.d("CircleImage3DView", "mWidth = " + mWidth);
         updateShaderMatrix();
-        invalidate();
+        //invalidate();  //刷新数据调用onDraw()重绘 
     }
     
     private void updateShaderMatrix() {
         float scale;
+        
         float dx = 0;
         float dy = 0;
 
         mShaderMatrix.set(null);
+
         //放大形式为填充
+
+        //缩放形式为填充
+
         if (mBitmapWidth * mDrawableRect.height() > mDrawableRect.width() * mBitmapHeight) {
             scale = mDrawableRect.height() / (float) mBitmapHeight;
             dx = (mDrawableRect.width() - mBitmapWidth * scale) * 0.5f;
@@ -527,10 +532,11 @@ public class CircleImage3DView extends ImageView {
             scale = mDrawableRect.width() / (float) mBitmapWidth;
             dy = (mDrawableRect.height() - mBitmapHeight * scale) * 0.5f;
         }
-        
+        //XY 轴缩放
         mShaderMatrix.setScale(scale, scale);
+        //缩放后移动实际指定距离
         mShaderMatrix.postTranslate((int) (dx + 0.5f) + mBorderWidth, (int) (dy + 0.5f) + mBorderWidth);
-
+        
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
 

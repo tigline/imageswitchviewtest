@@ -3,10 +3,12 @@ package com.example.imageswitchviewtest;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Scroller;
 
 /**
@@ -14,7 +16,7 @@ import android.widget.Scroller;
  * 
 
  */
-public class Image3DSwitchView extends ViewGroup {
+public class Image3DSwitchView extends LinearLayout {
 
 	/**
 	 * 图片左右两边的空白间距
@@ -97,14 +99,18 @@ public class Image3DSwitchView extends ViewGroup {
 			if (mCount < 5) {
 				return;
 			}
-			mWidth = getMeasuredWidth();
-			mHeight = getMeasuredHeight();
+			//mWidth = getMeasuredWidth();  //控件实际宽度
+			mWidth = getMeasuredHeight();
+			mHeight = getMeasuredWidth();
+			Log.d("Image3DSwitchView", "mHeight = " + mHeight );
 			// 每张图片的宽度设定为控件宽度的百分之六十
 			mImageWidth = (int) (mWidth * 0.6);
+			
 			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
 				mScroller.abortAnimation();
 				setScrollX(0);
 				int left = -mImageWidth * 2 + (mWidth - mImageWidth) / 2;
+				Log.d("Image3DSwitchView", "left = " + left );
 				// 分别获取每个位置上应该显示的图片下标
 				int[] items = { getIndexForItem(1), getIndexForItem(2),
 						getIndexForItem(3), getIndexForItem(4),
@@ -113,10 +119,11 @@ public class Image3DSwitchView extends ViewGroup {
 				// 通过循环为每张图片设定位置
 				for (int i = 0; i < items.length; i++) {
 					Image3DView childView = (Image3DView) getChildAt(items[i]);
-					childView.layout(left + IMAGE_PADDING, 0, left
-							+ mImageWidth - IMAGE_PADDING, mHeight);
+					childView.layout(left+ mImageWidth - IMAGE_PADDING, mHeight, 
+							left + IMAGE_PADDING, 0);
 					childView.initImageViewBitmap();
 					left = left + mImageWidth;
+					Log.d("Image3DSwitchView", "left = " + left );
 				}
 				refreshImageShowing();
 			}
@@ -128,26 +135,27 @@ public class Image3DSwitchView extends ViewGroup {
 	public boolean onTouchEvent(MotionEvent event) {
 		if (mScroller.isFinished()) {
 			if (mVelocityTracker == null) {
-				mVelocityTracker = VelocityTracker.obtain();
+				mVelocityTracker = VelocityTracker.obtain();//或得实例 跟踪触摸事件速率
 			}
-			mVelocityTracker.addMovement(event);
+			mVelocityTracker.addMovement(event); //将事件加入实例
 			int action = event.getAction();
-			float x = event.getX();
+			//float x = event.getX();
+			float y = event.getY();
 			switch (action) {
 			case MotionEvent.ACTION_DOWN:
 				// 记录按下时的横坐标
-				mLastMotionX = x;
+				mLastMotionX = y;
 				break;
 			case MotionEvent.ACTION_MOVE:
-				int disX = (int) (mLastMotionX - x);
-				mLastMotionX = x;
-				scrollBy(disX, 0);
+				int disX = (int) (mLastMotionX - y);
+				mLastMotionX = y;
+				scrollBy(disX, 0);  //X轴移动
 				// 当发生移动时刷新图片的显示状态
 				refreshImageShowing();
 				break;
 			case MotionEvent.ACTION_UP:
-				mVelocityTracker.computeCurrentVelocity(1000);
-				int velocityX = (int) mVelocityTracker.getXVelocity();
+				mVelocityTracker.computeCurrentVelocity(1000);//每秒移动像素
+				int velocityX = (int) mVelocityTracker.getYVelocity();
 				if (shouldScrollToNext(velocityX)) {
 					// 滚动到下一张图
 					scrollToNext();
@@ -178,7 +186,7 @@ public class Image3DSwitchView extends ViewGroup {
 				&& (mTouchState != TOUCH_STATE_REST)) {
 			return true;
 		}
-		float x = ev.getX();
+		float x = ev.getY();///////
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
 			mLastMotionX = x;
@@ -233,12 +241,12 @@ public class Image3DSwitchView extends ViewGroup {
 	 */
 	public void scrollToNext() {
 		if (mScroller.isFinished()) {
-			int disX = mImageWidth - getScrollX();
+			int disX = mImageWidth - getScrollY();///////////////
 			checkImageSwitchBorder(SCROLL_NEXT);
 			if (mListener != null) {
 				mListener.onImageSwitch(mCurrentImage);
 			}
-			beginScroll(getScrollX(), 0, disX, 0, SCROLL_NEXT);
+			beginScroll(getScrollY(), 0, disX, 0, SCROLL_NEXT);
 		}
 	}
 
@@ -247,12 +255,12 @@ public class Image3DSwitchView extends ViewGroup {
 	 */
 	public void scrollToPrevious() {
 		if (mScroller.isFinished()) {
-			int disX = -mImageWidth - getScrollX();
+			int disX = -mImageWidth - getScrollY();
 			checkImageSwitchBorder(SCROLL_PREVIOUS);
 			if (mListener != null) {
 				mListener.onImageSwitch(mCurrentImage);
 			}
-			beginScroll(getScrollX(), 0, disX, 0, SCROLL_PREVIOUS);
+			beginScroll(getScrollY(), 0, disX, 0, SCROLL_PREVIOUS);
 		}
 	}
 
@@ -261,7 +269,7 @@ public class Image3DSwitchView extends ViewGroup {
 	 */
 	public void scrollBack() {
 		if (mScroller.isFinished()) {
-			beginScroll(getScrollX(), 0, -getScrollX(), 0, SCROLL_BACK);
+			beginScroll(getScrollY(), 0, -getScrollY(), 0, SCROLL_BACK);
 		}
 	}
 
@@ -280,7 +288,7 @@ public class Image3DSwitchView extends ViewGroup {
 	 */
 	private void beginScroll(int startX, int startY, int dx, int dy,
 			final int action) {
-		int duration = (int) (700f / mImageWidth * Math.abs(dx));
+		int duration = (int) (700f / mImageWidth * Math.abs(dy));
 		mScroller.startScroll(startX, startY, dx, dy, duration);
 		invalidate();
 		handler.postDelayed(new Runnable() {
@@ -288,7 +296,7 @@ public class Image3DSwitchView extends ViewGroup {
 			public void run() {
 				if (action == SCROLL_NEXT || action == SCROLL_PREVIOUS) {
 					forceToRelayout = true;
-					requestLayout();
+					requestLayout();//当一个View需要parent view重新调用他的onMeasure onLayout来对重新设置自己位置
 				}
 			}
 		}, duration);
@@ -319,7 +327,7 @@ public class Image3DSwitchView extends ViewGroup {
 	private void refreshImageShowing() {
 		for (int i = 0; i < mItems.length; i++) {
 			Image3DView childView = (Image3DView) getChildAt(mItems[i]);
-			childView.setRotateData(i, getScrollX());
+			childView.setRotateData(i, getScrollY());//////////
 			childView.invalidate();
 		}
 	}
@@ -336,17 +344,17 @@ public class Image3DSwitchView extends ViewGroup {
 	}
 
 	/**
-	 * 判断是否应该滚动到下一张图片。
+	 * 判断是否应该滚动到下一张图片。 当速度大于600 或者距离大于两个图片宽度时
 	 */
 	private boolean shouldScrollToNext(int velocityX) {
-		return velocityX < -SNAP_VELOCITY || getScrollX() > mImageWidth / 2;
+		return velocityX < -SNAP_VELOCITY || getScrollY() > mImageWidth / 2;
 	}
 
 	/**
 	 * 判断是否应该滚动到上一张图片。
 	 */
 	private boolean shouldScrollToPrevious(int velocityX) {
-		return velocityX > SNAP_VELOCITY || getScrollX() < -mImageWidth / 2;
+		return velocityX > SNAP_VELOCITY || getScrollY() < -mImageWidth / 2;
 	}
 
 	/**
