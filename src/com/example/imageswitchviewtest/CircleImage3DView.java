@@ -54,7 +54,13 @@ public class CircleImage3DView extends ImageView {
     private int mBorderWidth = DEFAULT_BORDER_WIDTH;
 	
     private BitmapShader mBitmapShader;
-    private int mBitmapWidth;
+    /**
+     * 图片宽度
+     */
+    private int mBitmapWidth;  //
+    /**
+     * 图片高度
+     */
     private int mBitmapHeight;
 	private Camera mCamera;
 	//private Matrix mMaxtrix;
@@ -269,8 +275,8 @@ public class CircleImage3DView extends ImageView {
 	protected void onDraw(Canvas canvas) {
 		
 		if (getDrawable() == null) {
-            return;
-			//super.onDraw(canvas);
+            //return;
+			super.onDraw(canvas);
         }else if(isImageVisible()) {
             	
             	
@@ -489,7 +495,7 @@ public class CircleImage3DView extends ImageView {
         mBorderPaint.setStyle(Paint.Style.STROKE);
         mBorderPaint.setAntiAlias(true);
         mBorderPaint.setColor(mBorderColor);
-        mBorderPaint.setStrokeWidth(mBorderWidth);
+        mBorderPaint.setStrokeWidth(mBorderWidth); //设置空心线宽
  
         mBitmapHeight = mBitmap.getHeight();
         mBitmapWidth = mBitmap.getWidth();
@@ -513,7 +519,7 @@ public class CircleImage3DView extends ImageView {
         float dy = 0;
 
         mShaderMatrix.set(null);
-
+        //放大形式为填充
         if (mBitmapWidth * mDrawableRect.height() > mDrawableRect.width() * mBitmapHeight) {
             scale = mDrawableRect.height() / (float) mBitmapHeight;
             dx = (mDrawableRect.width() - mBitmapWidth * scale) * 0.5f;
