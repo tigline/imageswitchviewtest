@@ -15,9 +15,10 @@ import android.widget.ImageView;
 /**
  * 用于在Image3DSwitchView中显示3D图片。
  * 
-
+ * @author guolin
+ * @from http://blog.csdn.net/guolin_blog/article/details/17482089
  */
-public class Image3DView extends ImageView {
+public class Image3DViewH extends ImageView {
 	/**
 	 * 旋转角度的基准值
 	 */
@@ -34,19 +35,17 @@ public class Image3DView extends ImageView {
 	 */
 	private int mIndex;
 	/**
-	 * 在前图片在Y轴方向滚动的距离
+	 * 在前图片在X轴方向滚动的距离
 	 */
-	private int mScrollY;
+	private int mScrollX;
 	/**
 	 * Image3DSwitchView控件的宽度
 	 */
-	private int mLayoutHeight;
+	private int mLayoutWidth;
 	/**
 	 * 当前图片的宽度
 	 */
-	private int mHeight;
-	
-	//private int mWidth;
+	private int mWidth;
 	/**
 	 * 当前旋转的角度
 	 */
@@ -54,13 +53,13 @@ public class Image3DView extends ImageView {
 	/**
 	 * 旋转的中心点
 	 */
-	private float mDy;
+	private float mDx;
 	/**
 	 * 旋转的深度
 	 */
 	private float mDeep;
 
-	public Image3DView(Context context, AttributeSet attrs) {
+	public Image3DViewH(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mCamera = new Camera();
 		mMaxtrix = new Matrix();
@@ -75,11 +74,10 @@ public class Image3DView extends ImageView {
 			buildDrawingCache();
 			mBitmap = getDrawingCache();
 		}
-		mLayoutHeight = Image3DSwitchView.mHeight;				
-		mHeight = getHeight() + Image3DSwitchView.IMAGE_PADDING * 2; //648
-		//mHeight = 648
-		Log.d("Image3DView", "mLayoutHeight = " + mLayoutHeight);
-		Log.d("Image3DView", "mHeight = " + mHeight);
+		mLayoutWidth = Image3DSwitchViewH.mWidth;
+		Log.d("Image3DView", "mLayoutWidth = " + mLayoutWidth);
+		mWidth = getWidth() + Image3DSwitchViewH.IMAGE_PADDING * 2;
+		Log.d("Image3DView", "mWidth = " + mWidth);
 	}
 
 	/**
@@ -88,12 +86,11 @@ public class Image3DView extends ImageView {
 	 * @param index
 	 *            当前图片的下标
 	 * @param scrollX
-	 *            当前图片在Y轴方向滚动的距离
+	 *            当前图片在X轴方向滚动的距离
 	 */
-	public void setRotateData(int index, int scrollY) {
+	public void setRotateData(int index, int scrollX) {
 		mIndex = index;
-		mScrollY = scrollY;
-		Log.d("Image3DView", "mScrollY = " + scrollY);
+		mScrollX = scrollX;
 	}
 
 	/**
@@ -144,12 +141,11 @@ public class Image3DView extends ImageView {
 				computeRotateData();
 				mCamera.save();
 				mCamera.translate(0.0f, 0.0f, mDeep);
-				mCamera.rotateX(360f-mRotateDegree);
+				mCamera.rotateY(mRotateDegree);
 				mCamera.getMatrix(mMaxtrix);
 				mCamera.restore();
-				mMaxtrix.postTranslate(getWidth() / 2, mDy);
-				mMaxtrix.preTranslate(-getWidth() / 2, -mDy);
-				
+				mMaxtrix.preTranslate(-mDx, -getHeight() / 2);
+				mMaxtrix.postTranslate(mDx, getHeight() / 2);
 				canvas.drawBitmap(mBitmap, mMaxtrix, null);
 			}
 		}
@@ -159,74 +155,74 @@ public class Image3DView extends ImageView {
 	 * 在这里计算所有旋转所需要的数据。
 	 */
 	private void computeRotateData() {
-		float degreePerPix = BASE_DEGREE / mHeight;
-		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
+		float degreePerPix = BASE_DEGREE / mWidth;
+		float deepPerPix = BASE_DEEP / ((mLayoutWidth - mWidth) / 2);
 		switch (mIndex) {
-		case 0:  //第一张
-			mDy = mHeight;
-			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
-			if (mScrollY < -mHeight) {
+		case 0:
+			mDx = mWidth;
+			mRotateDegree = 360f - (2 * mWidth + mScrollX) * degreePerPix;
+			if (mScrollX < -mWidth) {
 				mDeep = 0;
 			} else {
-				mDeep = (mHeight + mScrollY) * deepPerPix;
+				mDeep = (mWidth + mScrollX) * deepPerPix;
 			}
 			break;
-		case 1:   //第二张 
-			if (mScrollY > 0) {
-				mDy = mHeight;
-				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
-				mDeep = mScrollY * deepPerPix;
+		case 1:
+			if (mScrollX > 0) {
+				mDx = mWidth;
+				mRotateDegree = (360f - BASE_DEGREE) - mScrollX * degreePerPix;
+				mDeep = mScrollX * deepPerPix;
 			} else {
-				if (mScrollY < -mHeight) {
-					mDy = -Image3DSwitchView.IMAGE_PADDING * 2;
-					mRotateDegree = (-mScrollY - mHeight) * degreePerPix;
+				if (mScrollX < -mWidth) {
+					mDx = -Image3DSwitchViewH.IMAGE_PADDING * 2;
+					mRotateDegree = (-mScrollX - mWidth) * degreePerPix;
 				} else {
-					mDy = mHeight;
-					mRotateDegree = 360f - (mHeight + mScrollY) * degreePerPix;
+					mDx = mWidth;
+					mRotateDegree = 360f - (mWidth + mScrollX) * degreePerPix;
 				}
 				mDeep = 0;
 			}
 			break;
-		case 2:  //正中显示
-			if (mScrollY > 0) {
-				mDy = mHeight;
-				mRotateDegree = 360f - mScrollY * degreePerPix;
+		case 2:
+			if (mScrollX > 0) {
+				mDx = mWidth;
+				mRotateDegree = 360f - mScrollX * degreePerPix;
 				mDeep = 0;
-				if (mScrollY > mHeight) {
-					mDeep = (mScrollY - mHeight) * deepPerPix;
+				if (mScrollX > mWidth) {
+					mDeep = (mScrollX - mWidth) * deepPerPix;
 				}
 			} else {
-				mDy = -Image3DSwitchView.IMAGE_PADDING * 2;
-				mRotateDegree = -mScrollY * degreePerPix;
+				mDx = -Image3DSwitchViewH.IMAGE_PADDING * 2;
+				mRotateDegree = -mScrollX * degreePerPix;
 				mDeep = 0;
-				if (mScrollY < -mHeight) {
-					mDeep = -(mHeight + mScrollY) * deepPerPix;
+				if (mScrollX < -mWidth) {
+					mDeep = -(mWidth + mScrollX) * deepPerPix;
 				}
 			}
 			break;
 		case 3:
-			if (mScrollY < 0) {
-				mDy = -Image3DSwitchView.IMAGE_PADDING * 2;
-				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
-				mDeep = -mScrollY * deepPerPix;
+			if (mScrollX < 0) {
+				mDx = -Image3DSwitchViewH.IMAGE_PADDING * 2;
+				mRotateDegree = BASE_DEGREE - mScrollX * degreePerPix;
+				mDeep = -mScrollX * deepPerPix;
 			} else {
-				if (mScrollY > mHeight) {
-					mDy = mHeight;
-					mRotateDegree = 360f - (mScrollY - mHeight) * degreePerPix;
+				if (mScrollX > mWidth) {
+					mDx = mWidth;
+					mRotateDegree = 360f - (mScrollX - mWidth) * degreePerPix;
 				} else {
-					mDy = -Image3DSwitchView.IMAGE_PADDING * 2;
-					mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
+					mDx = -Image3DSwitchViewH.IMAGE_PADDING * 2;
+					mRotateDegree = BASE_DEGREE - mScrollX * degreePerPix;
 				}
 				mDeep = 0;
 			}
 			break;
 		case 4:
-			mDy = -Image3DSwitchView.IMAGE_PADDING * 2;
-			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
-			if (mScrollY > mHeight) {
+			mDx = -Image3DSwitchViewH.IMAGE_PADDING * 2;
+			mRotateDegree = (2 * mWidth - mScrollX) * degreePerPix;
+			if (mScrollX > mWidth) {
 				mDeep = 0;
 			} else {
-				mDeep = (mHeight - mScrollY) * deepPerPix;
+				mDeep = (mWidth - mScrollX) * deepPerPix;
 			}
 			break;
 		}
@@ -241,36 +237,36 @@ public class Image3DView extends ImageView {
 		boolean isVisible = false;
 		switch (mIndex) {
 		case 0:
-			if (mScrollY < (mLayoutHeight - mHeight) / 2 - mHeight) {
+			if (mScrollX < (mLayoutWidth - mWidth) / 2 - mWidth) {
 				isVisible = true;
 			} else {
 				isVisible = false;
 			}
 			break;
 		case 1:
-			if (mScrollY > (mLayoutHeight - mHeight) / 2) {
+			if (mScrollX > (mLayoutWidth - mWidth) / 2) {
 				isVisible = false;
 			} else {
 				isVisible = true;
 			}
 			break;
 		case 2:
-			if (mScrollY > mLayoutHeight / 2 + mHeight / 2
-					|| mScrollY < -mLayoutHeight / 2 - mHeight / 2) {
+			if (mScrollX > mLayoutWidth / 2 + mWidth / 2
+					|| mScrollX < -mLayoutWidth / 2 - mWidth / 2) {
 				isVisible = false;
 			} else {
 				isVisible = true;
 			}
 			break;
 		case 3:
-			if (mScrollY < -(mLayoutHeight - mHeight) / 2) {
+			if (mScrollX < -(mLayoutWidth - mWidth) / 2) {
 				isVisible = false;
 			} else {
 				isVisible = true;
 			}
 			break;
 		case 4:
-			if (mScrollY > mHeight - (mLayoutHeight - mHeight) / 2) {
+			if (mScrollX > mWidth - (mLayoutWidth - mWidth) / 2) {
 				isVisible = true;
 			} else {
 				isVisible = false;

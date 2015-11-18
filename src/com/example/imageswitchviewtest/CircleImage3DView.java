@@ -41,7 +41,7 @@ public class CircleImage3DView extends ImageView {
     private static final int COLORDRAWABLE_DIMENSION = 1;
 
     private static final int DEFAULT_BORDER_WIDTH = 0;
-    private static final int DEFAULT_BORDER_COLOR = Color.BLACK;
+    private static final int DEFAULT_BORDER_COLOR = Color.BLUE;
 
     private final RectF mDrawableRect = new RectF();
     private final RectF mBorderRect = new RectF();
@@ -78,15 +78,15 @@ public class CircleImage3DView extends ImageView {
 	/**
 	 * 在前图片在X轴方向滚动的距离
 	 */
-	private int mScrollX;
+	private int mScrollY;
 	/**
 	 * CircleImage3DSwitchView控件的宽度
 	 */
-	private int mLayoutWidth;
+	private int mLayoutHeight;
 	/**
 	 * 当前图片的宽度
 	 */
-	private int mWidth;
+	private int mHeight;
 	/**
 	 * 当前旋转的角度
 	 */
@@ -94,7 +94,7 @@ public class CircleImage3DView extends ImageView {
 	/**
 	 * 旋转的中心点
 	 */
-	private float mDx;
+	private float mDy;
 	/**
 	 * 旋转的深度
 	 */
@@ -154,9 +154,8 @@ public class CircleImage3DView extends ImageView {
 			buildDrawingCache();
 			mBitmap = getDrawingCache();
 		}
-		mLayoutWidth = CircleImage3DSwitchView.mWidth;
-		mWidth = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-		//setup();
+		mLayoutHeight = CircleImage3DSwitchView.mHeight;				
+		mHeight = getHeight() + CircleImage3DSwitchView.IMAGE_PADDING * 2; 
 	}
 
 	/**
@@ -167,10 +166,10 @@ public class CircleImage3DView extends ImageView {
 	 * @param scrollX
 	 *            当前图片在X轴方向滚动的距离
 	 */
-	public void setRotateData(int index, int scrollX) {
+	public void setRotateData(int index, int scrollY) {
 		mIndex = index;
-		mScrollX = scrollX;
-		Log.d("CircleImage3DView", "mScrollX = " + scrollX);
+		mScrollY = scrollY;
+//		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
 	}
 
 	/**
@@ -214,10 +213,10 @@ public class CircleImage3DView extends ImageView {
 	    public void setImageBitmap(Bitmap bm) {
 	        super.setImageBitmap(bm);
 	        mBitmap = bm;
-//	        mLayoutWidth = CircleImage3DSwitchView.mWidth;
-//	        Log.d("CircleImage3DView", "mLayoutWidth = " + mLayoutWidth);
-//			mWidth = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//			Log.d("CircleImage3DView", "mWidth = " + mWidth);
+//	        mLayoutHeight = CircleImage3DSwitchView.mHeight;
+//	        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
+//			mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
+//			Log.d("CircleImage3DView", "mHeight = " + mHeight);
 	        setup();
 	    }
 	
@@ -225,10 +224,10 @@ public class CircleImage3DView extends ImageView {
 	    public void setImageDrawable(Drawable drawable) {
 	        super.setImageDrawable(drawable);
 	        mBitmap = getBitmapFromDrawable(drawable);
-//	        mLayoutWidth = CircleImage3DSwitchView.mWidth;
-//	        Log.d("CircleImage3DView", "mLayoutWidth = " + mLayoutWidth);
-//			mWidth = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//			Log.d("CircleImage3DView", "mWidth = " + mWidth);
+//	        mLayoutHeight = CircleImage3DSwitchView.mHeight;
+//	        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
+//			mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
+//			Log.d("CircleImage3DView", "mHeight = " + mHeight);
 	        setup();
 	    }
 	
@@ -236,10 +235,10 @@ public class CircleImage3DView extends ImageView {
 	    public void setImageResource(int resId) {
 	        super.setImageResource(resId);
 	        mBitmap = getBitmapFromDrawable(getDrawable());
-//	        mLayoutWidth = CircleImage3DSwitchView.mWidth;
-//	        Log.d("CircleImage3DView", "mLayoutWidth = " + mLayoutWidth);
-//			mWidth = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//			Log.d("CircleImage3DView", "mWidth = " + mWidth);
+//	        mLayoutHeight = CircleImage3DSwitchView.mHeight;
+//	        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
+//			mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
+//			Log.d("CircleImage3DView", "mHeight = " + mHeight);
 	        setup();
 	    }
 	   
@@ -283,11 +282,11 @@ public class CircleImage3DView extends ImageView {
             	computeRotateData();
     			mCamera.save(); //保存状态 不影响其他元素
     			mCamera.translate(0.0f, 0.0f, mDeep);
-    			mCamera.rotateY(mRotateDegree);
+    			mCamera.rotateX(360f-mRotateDegree);
     			mCamera.getMatrix(mShaderMatrix);
     			mCamera.restore(); //取出状态
-    			mShaderMatrix.preTranslate(-mDx, -getHeight() / 2);
-    			mShaderMatrix.postTranslate(mDx, getHeight() / 2);
+    			mShaderMatrix.preTranslate(-getHeight() / 2, -mDy);
+    			mShaderMatrix.postTranslate(getHeight() / 2, mDy);
 //              canvas.drawBitmap(mBitmap, mShaderMatrix, null);
 //    			canvas.setMatrix(mShaderMatrix);
     			canvas.concat(mShaderMatrix);
@@ -311,8 +310,8 @@ public class CircleImage3DView extends ImageView {
 //				mCamera.rotateY(mRotateDegree);
 //				mCamera.getMatrix(mMaxtrix);
 //				mCamera.restore();
-//				mMaxtrix.preTranslate(-mDx, -getHeight() / 2);
-//				mMaxtrix.postTranslate(mDx, getHeight() / 2);
+//				mMaxtrix.preTranslate(-mDy, -getHeight() / 2);
+//				mMaxtrix.postTranslate(mDy, getHeight() / 2);
 //				canvas.drawBitmap(mBitmap, mMaxtrix, null);
 //			}11-13 10:43:22.478: E/ActivityThread(13536): android.view.InflateException: Binary XML file line #12: Error inflating class com.example.imageswitchviewtest.Image3DView
 
@@ -328,74 +327,74 @@ public class CircleImage3DView extends ImageView {
 	 * 在这里计算所有旋转所需要的数据。
 	 */
 	private void computeRotateData() {
-		float degreePerPix = BASE_DEGREE / mWidth;
-		float deepPerPix = BASE_DEEP / ((mLayoutWidth - mWidth) / 2);
+		float degreePerPix = BASE_DEGREE / mHeight;
+		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
 		switch (mIndex) {
 		case 0:
-			mDx = mWidth;
-			mRotateDegree = 360f - (2 * mWidth + mScrollX) * degreePerPix;
-			if (mScrollX < -mWidth) {
+			mDy = mHeight;
+			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
+			if (mScrollY < -mHeight) {
 				mDeep = 0;
 			} else {
-				mDeep = (mWidth + mScrollX) * deepPerPix;
+				mDeep = (mHeight + mScrollY) * deepPerPix;
 			}
 			break;
 		case 1:
-			if (mScrollX > 0) {
-				mDx = mWidth;
-				mRotateDegree = (360f - BASE_DEGREE) - mScrollX * degreePerPix;
-				mDeep = mScrollX * deepPerPix;
+			if (mScrollY > 0) {
+				mDy = mHeight;
+				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
+				mDeep = mScrollY * deepPerPix;
 			} else {
-				if (mScrollX < -mWidth) {
-					mDx = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-					mRotateDegree = (-mScrollX - mWidth) * degreePerPix;
+				if (mScrollY < -mHeight) {
+					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+					mRotateDegree = (-mScrollY - mHeight) * degreePerPix;
 				} else {
-					mDx = mWidth;
-					mRotateDegree = 360f - (mWidth + mScrollX) * degreePerPix;
+					mDy = mHeight;
+					mRotateDegree = 360f - (mHeight + mScrollY) * degreePerPix;
 				}
 				mDeep = 0;
 			}
 			break;
 		case 2:
-			if (mScrollX > 0) {
-				mDx = mWidth;
-				mRotateDegree = 360f - mScrollX * degreePerPix;
+			if (mScrollY > 0) {
+				mDy = mHeight;
+				mRotateDegree = 360f - mScrollY * degreePerPix;
 				mDeep = 0;
-				if (mScrollX > mWidth) {
-					mDeep = (mScrollX - mWidth) * deepPerPix;
+				if (mScrollY > mHeight) {
+					mDeep = (mScrollY - mHeight) * deepPerPix;
 				}
 			} else {
-				mDx = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-				mRotateDegree = -mScrollX * degreePerPix;
+				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+				mRotateDegree = -mScrollY * degreePerPix;
 				mDeep = 0;
-				if (mScrollX < -mWidth) {
-					mDeep = -(mWidth + mScrollX) * deepPerPix;
+				if (mScrollY < -mHeight) {
+					mDeep = -(mHeight + mScrollY) * deepPerPix;
 				}
 			}
 			break;
 		case 3:
-			if (mScrollX < 0) {
-				mDx = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-				mRotateDegree = BASE_DEGREE - mScrollX * degreePerPix;
-				mDeep = -mScrollX * deepPerPix;
+			if (mScrollY < 0) {
+				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
+				mDeep = -mScrollY * deepPerPix;
 			} else {
-				if (mScrollX > mWidth) {
-					mDx = mWidth;
-					mRotateDegree = 360f - (mScrollX - mWidth) * degreePerPix;
+				if (mScrollY > mHeight) {
+					mDy = mHeight;
+					mRotateDegree = 360f - (mScrollY - mHeight) * degreePerPix;
 				} else {
-					mDx = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-					mRotateDegree = BASE_DEGREE - mScrollX * degreePerPix;
+					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+					mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
 				}
 				mDeep = 0;
 			}
 			break;
 		case 4:
-			mDx = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-			mRotateDegree = (2 * mWidth - mScrollX) * degreePerPix;
-			if (mScrollX > mWidth) {
+			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
+			if (mScrollY > mHeight) {
 				mDeep = 0;
 			} else {
-				mDeep = (mWidth - mScrollX) * deepPerPix;
+				mDeep = (mHeight - mScrollY) * deepPerPix;
 			}
 			break;
 		}
@@ -437,36 +436,36 @@ public class CircleImage3DView extends ImageView {
 		boolean isVisible = false;
 		switch (mIndex) {
 		case 0:
-			if (mScrollX < (mLayoutWidth - mWidth) / 2 - mWidth) {
+			if (mScrollY < (mLayoutHeight - mHeight) / 2 - mHeight) {
 				isVisible = true;
 			} else {
 				isVisible = false;
 			}
 			break;
 		case 1:
-			if (mScrollX > (mLayoutWidth - mWidth) / 2) {
+			if (mScrollY > (mLayoutHeight - mHeight) / 2) {
 				isVisible = false;
 			} else {
 				isVisible = true;
 			}
 			break;
 		case 2:
-			if (mScrollX > mLayoutWidth / 2 + mWidth / 2
-					|| mScrollX < -mLayoutWidth / 2 - mWidth / 2) {
+			if (mScrollY > mLayoutHeight / 2 + mHeight / 2
+					|| mScrollY < -mLayoutHeight / 2 - mHeight / 2) {
 				isVisible = false;
 			} else {
 				isVisible = true;
 			}
 			break;
 		case 3:
-			if (mScrollX < -(mLayoutWidth - mWidth) / 2) {
+			if (mScrollY < -(mLayoutHeight - mHeight) / 2) {
 				isVisible = false;
 			} else {
 				isVisible = true;
 			}
 			break;
 		case 4:
-			if (mScrollX > mWidth - (mLayoutWidth - mWidth) / 2) {
+			if (mScrollY > mHeight - (mLayoutHeight - mHeight) / 2) {
 				isVisible = true;
 			} else {
 				isVisible = false;
@@ -505,12 +504,12 @@ public class CircleImage3DView extends ImageView {
 
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
         mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
-        mLayoutWidth = CircleImage3DSwitchView.mWidth;
-        Log.d("CircleImage3DView", "mLayoutWidth = " + mLayoutWidth);
-		mWidth = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-		Log.d("CircleImage3DView", "mWidth = " + mWidth);
+        mLayoutHeight = CircleImage3DSwitchView.mHeight;
+        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
+		mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
+		Log.d("CircleImage3DView", "mHeight = " + mHeight);
         updateShaderMatrix();
-        //invalidate();  //刷新数据调用onDraw()重绘 
+        invalidate();  //刷新数据调用onDraw()重绘 
     }
     
     private void updateShaderMatrix() {
