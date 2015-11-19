@@ -16,7 +16,7 @@ import android.view.WindowManager;
  */
 public class CircleActivity extends Activity {
 	
-	private CircleImage3DSwitchView circleImageSwitchView;
+	private CircleImage3DSwitchView circleImageSwitchView ,circleImage3DSwitchView_2;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,12 +27,15 @@ public class CircleActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_circleh);
         circleImageSwitchView = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_clone);
+        circleImage3DSwitchView_2 = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_2);
         circleImageSwitchView.setCurrentImage(1);
+        circleImage3DSwitchView_2.setCurrentImage(1);
     }
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		circleImageSwitchView.clear();
+		circleImage3DSwitchView_2.clear();
 	}
 }

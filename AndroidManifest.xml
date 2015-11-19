@@ -24,7 +24,7 @@
         </activity>
         <activity android:name="com.example.imageswitchviewtest.ImageActivity"/>
         <activity android:name="com.example.imageswitchviewtest.CircleActivity"/>
-        <activity android:name="com.example.imageswitchviewtest.MainActivity"/>y
+        <activity android:name="com.example.imageswitchviewtest.MainActivity"/>
     </application>
 
 </manifest>

@@ -41,7 +41,7 @@ public class CircleImage3DView extends ImageView {
     private static final int COLORDRAWABLE_DIMENSION = 1;
 
     private static final int DEFAULT_BORDER_WIDTH = 0;
-    private static final int DEFAULT_BORDER_COLOR = Color.BLUE;
+    private static final int DEFAULT_BORDER_COLOR = Color.RED;
 
     private final RectF mDrawableRect = new RectF();
     private final RectF mBorderRect = new RectF();
@@ -99,6 +99,8 @@ public class CircleImage3DView extends ImageView {
 	 * 旋转的深度
 	 */
 	private float mDeep;
+	
+	private float xOffset;
 
 	public CircleImage3DView(Context context) {
         super(context);
@@ -127,9 +129,6 @@ public class CircleImage3DView extends ImageView {
             setup();
             mSetupPending = false;
         }
-		
-		
-		//mMaxtrix = new Matrix();
 	}
 
 
@@ -180,43 +179,11 @@ public class CircleImage3DView extends ImageView {
 			mBitmap.recycle();
 		}
 	}
-	/*
-	@Override
-	public void setImageResource(int resId) {
-		super.setImageResource(resId);
-		mBitmap = null;
-		initImageViewBitmap();
-	}
-
-	@Override
-	public void setImageBitmap(Bitmap bm) {
-		super.setImageBitmap(bm);
-		mBitmap = null;
-		initImageViewBitmap();
-	}
-
-	@Override
-	public void setImageDrawable(Drawable drawable) {
-		super.setImageDrawable(drawable);
-		mBitmap = null;
-		initImageViewBitmap();
-	}
 	
-	@Override
-	public void setImageURI(Uri uri) {
-		super.setImageURI(uri);
-		mBitmap = null;
-		initImageViewBitmap();
-	}
-	*/
 	 @Override
 	    public void setImageBitmap(Bitmap bm) {
 	        super.setImageBitmap(bm);
 	        mBitmap = bm;
-//	        mLayoutHeight = CircleImage3DSwitchView.mHeight;
-//	        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
-//			mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//			Log.d("CircleImage3DView", "mHeight = " + mHeight);
 	        setup();
 	    }
 	
@@ -224,10 +191,6 @@ public class CircleImage3DView extends ImageView {
 	    public void setImageDrawable(Drawable drawable) {
 	        super.setImageDrawable(drawable);
 	        mBitmap = getBitmapFromDrawable(drawable);
-//	        mLayoutHeight = CircleImage3DSwitchView.mHeight;
-//	        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
-//			mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//			Log.d("CircleImage3DView", "mHeight = " + mHeight);
 	        setup();
 	    }
 	
@@ -235,10 +198,6 @@ public class CircleImage3DView extends ImageView {
 	    public void setImageResource(int resId) {
 	        super.setImageResource(resId);
 	        mBitmap = getBitmapFromDrawable(getDrawable());
-//	        mLayoutHeight = CircleImage3DSwitchView.mHeight;
-//	        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
-//			mHeight = getWidth() + CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//			Log.d("CircleImage3DView", "mHeight = " + mHeight);
 	        setup();
 	    }
 	   
@@ -281,7 +240,7 @@ public class CircleImage3DView extends ImageView {
             	
             	computeRotateData();
     			mCamera.save(); //保存状态 不影响其他元素
-    			mCamera.translate(0.0f, 0.0f, mDeep);
+    			mCamera.translate(xOffset, 0.0f, mDeep);
     			mCamera.rotateX(360f-mRotateDegree);
     			mCamera.getMatrix(mShaderMatrix);
     			mCamera.restore(); //取出状态
@@ -295,27 +254,7 @@ public class CircleImage3DView extends ImageView {
                 canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);         
 //                setVisibility(INVISIBLE);
         }
-            
 
-        
-//		if (mBitmap == null) {
-//			// 如果Bitmap对象还不存在，先使用父类的onDraw方法进行绘制
-//			super.onDraw(canvas);
-//		} else {
-//			if (isImageVisible()) {
-//				// 绘图时需要注意，只有当图片可见的时候才进行绘制，这样可以节省运算效率
-//				computeRotateData();
-//				mCamera.save();
-//				mCamera.translate(0.0f, 0.0f, mDeep);
-//				mCamera.rotateY(mRotateDegree);
-//				mCamera.getMatrix(mMaxtrix);
-//				mCamera.restore();
-//				mMaxtrix.preTranslate(-mDy, -getHeight() / 2);
-//				mMaxtrix.postTranslate(mDy, getHeight() / 2);
-//				canvas.drawBitmap(mBitmap, mMaxtrix, null);
-//			}11-13 10:43:22.478: E/ActivityThread(13536): android.view.InflateException: Binary XML file line #12: Error inflating class com.example.imageswitchviewtest.Image3DView
-
-//		}
 	}
 
 	@Override
@@ -331,26 +270,39 @@ public class CircleImage3DView extends ImageView {
 		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
 		switch (mIndex) {
 		case 0:
+<<<<<<< Updated upstream
 
+=======
+			xOffset = 0f;
+>>>>>>> Stashed changes
 			mDy = mHeight;
 			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
 			if (mScrollY < -mHeight) {
 				mDeep = 0;
 			} else {
 				mDeep = (mHeight + mScrollY) * deepPerPix;
+				
 			}
 			break;
 		case 1:
+<<<<<<< Updated upstream
 	
 			if (mScrollY > 0) {
+=======
+			//如果向上滑动至消失
+			if (mScrollY > 0) {   
+>>>>>>> Stashed changes
 				mDy = mHeight;
 				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
 				mDeep = mScrollY * deepPerPix;
+				xOffset = mDeep;
 			} else {
+				//如果向下滑超过中框
 				if (mScrollY < -mHeight) {
 					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 					mRotateDegree = (-mScrollY - mHeight) * degreePerPix;
 				} else {
+					//未到中框
 					mDy = mHeight;
 					mRotateDegree = 360f - (mHeight + mScrollY) * degreePerPix;
 				}
@@ -358,7 +310,11 @@ public class CircleImage3DView extends ImageView {
 			}
 			break;
 		case 2:
+<<<<<<< Updated upstream
 		
+=======
+
+>>>>>>> Stashed changes
 			if (mScrollY > 0) {
 				mDy = mHeight;
 				mRotateDegree = 360f - mScrollY * degreePerPix;
@@ -366,6 +322,7 @@ public class CircleImage3DView extends ImageView {
 				if (mScrollY > mHeight) {
 					mDeep = (mScrollY - mHeight) * deepPerPix;
 				}
+				xOffset = mDeep;
 			} else {
 				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 				mRotateDegree = -mScrollY * degreePerPix;
@@ -373,10 +330,15 @@ public class CircleImage3DView extends ImageView {
 				if (mScrollY < -mHeight) {
 					mDeep = -(mHeight + mScrollY) * deepPerPix;
 				}
+				xOffset = mDeep;
 			}
 			break;
 		case 3:
+<<<<<<< Updated upstream
 			
+=======
+			xOffset = 0f;
+>>>>>>> Stashed changes
 			if (mScrollY < 0) {
 				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
@@ -394,7 +356,11 @@ public class CircleImage3DView extends ImageView {
 			break;
 			
 		case 4:
+<<<<<<< Updated upstream
 
+=======
+			xOffset = 0f;
+>>>>>>> Stashed changes
 			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
 			if (mScrollY > mHeight) {
@@ -525,8 +491,6 @@ public class CircleImage3DView extends ImageView {
         float dy = 0;
 
         mShaderMatrix.set(null);
-
-        //放大形式为填充
 
         //缩放形式为填充
 
