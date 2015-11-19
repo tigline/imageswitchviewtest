@@ -167,7 +167,7 @@ public class CircleImage3DView extends ImageView {
 	 *            当前图片在X轴方向滚动的距离
 	 */
 	public void setRotateData(int index, int scrollY) {
-		mIndex = index;
+		mIndex = index%5;
 		mScrollY = scrollY;
 //		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
 	}
@@ -293,7 +293,7 @@ public class CircleImage3DView extends ImageView {
     			
             	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
                 canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);         
-    		
+//                setVisibility(INVISIBLE);
         }
             
 
@@ -331,6 +331,7 @@ public class CircleImage3DView extends ImageView {
 		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
 		switch (mIndex) {
 		case 0:
+
 			mDy = mHeight;
 			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
 			if (mScrollY < -mHeight) {
@@ -340,6 +341,7 @@ public class CircleImage3DView extends ImageView {
 			}
 			break;
 		case 1:
+	
 			if (mScrollY > 0) {
 				mDy = mHeight;
 				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
@@ -356,6 +358,7 @@ public class CircleImage3DView extends ImageView {
 			}
 			break;
 		case 2:
+		
 			if (mScrollY > 0) {
 				mDy = mHeight;
 				mRotateDegree = 360f - mScrollY * degreePerPix;
@@ -373,6 +376,7 @@ public class CircleImage3DView extends ImageView {
 			}
 			break;
 		case 3:
+			
 			if (mScrollY < 0) {
 				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
@@ -388,7 +392,9 @@ public class CircleImage3DView extends ImageView {
 				mDeep = 0;
 			}
 			break;
+			
 		case 4:
+
 			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
 			if (mScrollY > mHeight) {

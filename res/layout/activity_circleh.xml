@@ -3,16 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff" >
+    android:background="#9f5f9f" >
     
     <com.example.imageswitchviewtest.CircleImage3DSwitchView
         android:id="@+id/image_switch_view_clone"
-        android:layout_width="150dp"
-        android:layout_height="match_parent" >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true" >
 
         <com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image1"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/image1"
@@ -21,7 +22,7 @@
 
         <com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image2"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/image2"
@@ -30,7 +31,7 @@
 
         <com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image3"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/image3"
@@ -39,7 +40,7 @@
 
         <com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image4"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/image4"
@@ -48,28 +49,56 @@
 
         <com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image5"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/image5"
             app:border_width="2dp"
-        	app:border_color="@color/light" />
+        	app:border_color="@color/light"
+        	android:visibility="invisible" />
 
-        <com.example.imageswitchviewtest.CircleImage3DView
+		<com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image6"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/image6"
+            android:src="@drawable/image1"
             app:border_width="2dp"
         	app:border_color="@color/light" />
 
         <com.example.imageswitchviewtest.CircleImage3DView
             android:id="@+id/image7"
-            android:layout_width="match_parent"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:src="@drawable/image7"
+            android:src="@drawable/image2"
+            app:border_width="2dp"
+        	app:border_color="@color/light" />
+
+        <com.example.imageswitchviewtest.CircleImage3DView
+            android:id="@+id/image8"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/image3"
+            app:border_width="2dp"
+        	app:border_color="@color/light" />
+
+        <com.example.imageswitchviewtest.CircleImage3DView
+            android:id="@+id/image9"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/image4"
+            app:border_width="2dp"
+        	app:border_color="@color/light" />
+
+        <com.example.imageswitchviewtest.CircleImage3DView
+            android:id="@+id/image10"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/image5"
             app:border_width="2dp"
         	app:border_color="@color/light" />
         
