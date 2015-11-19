@@ -1,6 +1,7 @@
 package com.example.imageswitchviewtest;
 
 
+import android.content.ClipData.Item;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -101,35 +102,33 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			if (mCount < 5) {
 				return;
 			}
-			mWidth = getMeasuredWidth()/6;
+			mWidth = getMeasuredWidth();
 			mHeight = getMeasuredHeight();
 			Log.d("CircleImage3DSwitchView", "mHeight = " + mHeight );
 			// 每张图片的宽度设定为控件宽度的百分之六十
-			mImageHeight = (int) (mHeight * 0.6);
+			mImageHeight = (int) (mHeight * 0.5);
 			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
 				mScroller.abortAnimation();
 				setScrollY(0);
-				int top = -mImageHeight * 2 + (mHeight - mImageHeight) / 2;
+				//int top = -mImageHeight * 2 + (mHeight - mImageHeight) / 2;
+				int top = (mHeight - mImageHeight) / 2;
 				Log.d("CircleImage3DSwitchView", "top = " + top );
 				// 分别获取每个位置上应该显示的图片下标
 				int[] items = { getIndexForItem(1), getIndexForItem(2),
 						getIndexForItem(3), getIndexForItem(4),
-						getIndexForItem(5), getIndexForItem(6), getIndexForItem(7),
-						getIndexForItem(8), getIndexForItem(9),
-						getIndexForItem(10)};
+						getIndexForItem(5)};
 				mItems = items;
 				// 通过循环为每张图片设定位置
-				for (int i = 0; i < 5; i++) {
-					for (int j = 0; j < 2; j++) {
-						CircleImage3DView childView = (CircleImage3DView) getChildAt(items[i]);
-						childView.layout(j*mWidth, top + IMAGE_PADDING, mWidth*(1+j), top
-								+ mImageHeight - IMAGE_PADDING);
-						childView.initImageViewBitmap();
-						refreshImageShowing();
-					}
+				for (int i = 0; i < mCount; i++) {
+					
+					CircleImage3DView childView = (CircleImage3DView) getChildAt(items[i]);
+					childView.layout(0, top + IMAGE_PADDING, mWidth, top
+							+ mImageHeight - IMAGE_PADDING);
+					childView.initImageViewBitmap();
+					
 					top = top + mImageHeight;
 					Log.d("CircleImage3DSwitchView", "top = " + top );
-					
+					refreshImageShowing();
 					
 				}
 				

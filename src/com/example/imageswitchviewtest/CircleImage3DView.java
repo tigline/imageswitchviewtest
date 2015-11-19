@@ -1,5 +1,6 @@
 package com.example.imageswitchviewtest;
 
+import android.R.integer;
 import android.content.Context;
 import android.content.res.TypedArray;
 
@@ -102,6 +103,8 @@ public class CircleImage3DView extends ImageView {
 	
 	private float xOffset;
 
+	private float yOffset;
+	
 	public CircleImage3DView(Context context) {
         super(context);
     }
@@ -166,8 +169,9 @@ public class CircleImage3DView extends ImageView {
 	 *            当前图片在X轴方向滚动的距离
 	 */
 	public void setRotateData(int index, int scrollY) {
-		mIndex = index%5;
+		//mIndex = index;
 		mScrollY = scrollY;
+//		yOffset = dy;
 //		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
 	}
 
@@ -236,11 +240,13 @@ public class CircleImage3DView extends ImageView {
             //return;
 			super.onDraw(canvas);
         }else if(isImageVisible()) {
-            	
-            	
+            	int[] location=new int[2];
+            	getLocationOnScreen(location);
+            	yOffset = location[1];
+            	Log.d("CircleImage3DView", location[0] + "  "+ location[1]);
             	computeRotateData();
     			mCamera.save(); //保存状态 不影响其他元素
-    			mCamera.translate(xOffset, 0.0f, mDeep);
+    			mCamera.translate(0.0f, 0.0f, mDeep);
     			mCamera.rotateX(360f-mRotateDegree);
     			mCamera.getMatrix(mShaderMatrix);
     			mCamera.restore(); //取出状态
@@ -268,13 +274,20 @@ public class CircleImage3DView extends ImageView {
 	private void computeRotateData() {
 		float degreePerPix = BASE_DEGREE / mHeight;
 		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
+		if (yOffset < -260) {
+			mIndex = 0;
+		}else if (yOffset >= -260 && yOffset <= 280) {
+			mIndex = 1;
+		}else if (yOffset >= 280 && yOffset <= 820) {
+			mIndex = 2;
+		}else if (yOffset >= 820 && yOffset <= 1080) {
+			mIndex = 3;
+		}else if (yOffset > 1080) {
+			mIndex = 4;
+		}
 		switch (mIndex) {
 		case 0:
-<<<<<<< Updated upstream
-
-=======
 			xOffset = 0f;
->>>>>>> Stashed changes
 			mDy = mHeight;
 			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
 			if (mScrollY < -mHeight) {
@@ -284,14 +297,10 @@ public class CircleImage3DView extends ImageView {
 				
 			}
 			break;
-		case 1:
-<<<<<<< Updated upstream
-	
-			if (mScrollY > 0) {
-=======
+		case 1:	
+
 			//如果向上滑动至消失
 			if (mScrollY > 0) {   
->>>>>>> Stashed changes
 				mDy = mHeight;
 				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
 				mDeep = mScrollY * deepPerPix;
@@ -310,11 +319,6 @@ public class CircleImage3DView extends ImageView {
 			}
 			break;
 		case 2:
-<<<<<<< Updated upstream
-		
-=======
-
->>>>>>> Stashed changes
 			if (mScrollY > 0) {
 				mDy = mHeight;
 				mRotateDegree = 360f - mScrollY * degreePerPix;
@@ -334,11 +338,7 @@ public class CircleImage3DView extends ImageView {
 			}
 			break;
 		case 3:
-<<<<<<< Updated upstream
-			
-=======
 			xOffset = 0f;
->>>>>>> Stashed changes
 			if (mScrollY < 0) {
 				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
@@ -356,11 +356,7 @@ public class CircleImage3DView extends ImageView {
 			break;
 			
 		case 4:
-<<<<<<< Updated upstream
-
-=======
 			xOffset = 0f;
->>>>>>> Stashed changes
 			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
 			if (mScrollY > mHeight) {

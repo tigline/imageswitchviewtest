@@ -27,15 +27,15 @@ public class CircleActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_circleh);
         circleImageSwitchView = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_clone);
-        circleImage3DSwitchView_2 = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_2);
+//        circleImage3DSwitchView_2 = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_2);
         circleImageSwitchView.setCurrentImage(1);
-        circleImage3DSwitchView_2.setCurrentImage(1);
+//        circleImage3DSwitchView_2.setCurrentImage(1);
     }
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		circleImageSwitchView.clear();
-		circleImage3DSwitchView_2.clear();
+//		circleImage3DSwitchView_2.clear();
 	}
 }
