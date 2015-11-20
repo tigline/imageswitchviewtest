@@ -1,11 +1,17 @@
 package com.example.imageswitchviewtest;
 
 
+import java.util.ArrayList;
+
+
+import android.annotation.SuppressLint;
 import android.content.ClipData.Item;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
@@ -64,7 +70,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 * 记录控件高度
 	 */
 	
-
+	public ViewGroup viewGroup;
 	public static int mHeight;
 	/**
 	 * 记录每张图片的宽度
@@ -82,27 +88,51 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 * 记录上次触摸的横坐标值
 	 */
 	private float mLastMotionY;
+	
+	public ArrayList<CircleImage3DView> circleList;
 	/**
 	 * 是否强制重新布局
 	 */
 	private boolean forceToRelayout;
 	private int[] mItems;
 
-	public CircleImage3DSwitchView(Context context, AttributeSet attrs) {
+	@SuppressLint("InflateParams") public CircleImage3DSwitchView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 		mScroller = new Scroller(context);
-	}
+		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
+		//circleList = new ArrayList<CircleImage3DView>();
+		for (int i = 0; i < 18; i++) {
+			CircleImage3DView view = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_view, null);
+			//circleList.add(view);
+			addView(view);
 
+		}
+        
+	}
+//	@Override  
+//	protected void dispatchDraw(Canvas canvas)    
+//	{    
+//	    super.dispatchDraw(canvas);    
+//	    CircleImage3DView v = (CircleImage3DView) getChildAt(0);    
+//	    if(v != null)    
+//	        {    
+//	        drawChild(canvas, v, getDrawingTime());    
+//	        }    
+//	}
+	public void CreateView() {
+		
+	}
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		if (changed || forceToRelayout) {
 			mCount = getChildCount();
-			// 图片数量必须大于5，不然无法正常显示
-			if (mCount < 5) {
-				return;
-			}
-			mWidth = getMeasuredWidth();
+			Log.d("CircleImage3DSwitchView", "mCount = " + mCount );
+//			// 图片数量必须大于5，不然无法正常显示
+//			if (mCount < 5) {
+//				return;
+//			}
+			mWidth = getMeasuredWidth()/6;
 			mHeight = getMeasuredHeight();
 			Log.d("CircleImage3DSwitchView", "mHeight = " + mHeight );
 			// 每张图片的宽度设定为控件宽度的百分之六十
@@ -110,25 +140,35 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
 				mScroller.abortAnimation();
 				setScrollY(0);
-				//int top = -mImageHeight * 2 + (mHeight - mImageHeight) / 2;
-				int top = (mHeight - mImageHeight) / 2;
+				int top = -mImageHeight + (mHeight - mImageHeight) / 2;
+				//int top = (mHeight - mImageHeight) / 2;
 				Log.d("CircleImage3DSwitchView", "top = " + top );
 				// 分别获取每个位置上应该显示的图片下标
 				int[] items = { getIndexForItem(1), getIndexForItem(2),
 						getIndexForItem(3), getIndexForItem(4),
-						getIndexForItem(5)};
-				mItems = items;
+						getIndexForItem(5),
+						getIndexForItem(6), getIndexForItem(7),
+						getIndexForItem(8), getIndexForItem(9),
+						getIndexForItem(10)};
+				mItems = items; 
 				// 通过循环为每张图片设定位置
-				for (int i = 0; i < mCount; i++) {
+				for (int i = 0; i < 3; i++) {
+						for (int j = 0; j < 6; j++) {
+							CircleImage3DView childView = (CircleImage3DView) getChildAt(j+i*6);
+//							CircleImage3DView childView = (CircleImage3DView) findViewById(R.layout.circle_view);
+							childView.layout(mWidth*j, top + IMAGE_PADDING, mWidth*(j+1), top
+									+ mImageHeight - IMAGE_PADDING);
+							childView.initImageViewBitmap();
+							refreshImageShowing();
+						}
+						
+						
+
 					
-					CircleImage3DView childView = (CircleImage3DView) getChildAt(items[i]);
-					childView.layout(0, top + IMAGE_PADDING, mWidth, top
-							+ mImageHeight - IMAGE_PADDING);
-					childView.initImageViewBitmap();
 					
 					top = top + mImageHeight;
 					Log.d("CircleImage3DSwitchView", "top = " + top );
-					refreshImageShowing();
+					//refreshImageShowing();
 					
 				}
 				
@@ -338,14 +378,15 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 */
 	private void refreshImageShowing() {
 		for (int i = 0; i < mItems.length; i++) {
-			CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
+			//CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
+			CircleImage3DView childView = (CircleImage3DView) getChildAt(i);
 			childView.setRotateData(i, getScrollY());
 			childView.invalidate();  //UI线程中刷新view
 		}
 	}
 
 	/**
-	 * 检查图片的边界，防止图片的下标超出规定范围。
+	 * 检查图片的边界，防止图片的下标超出规定范围。 用于循环显示
 	 */
 	private void checkImageSwitchBorder(int action) {
 		if (action == SCROLL_NEXT && ++mCurrentImage >= mCount) {

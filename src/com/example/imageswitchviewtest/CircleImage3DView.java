@@ -169,7 +169,7 @@ public class CircleImage3DView extends ImageView {
 	 *            当前图片在X轴方向滚动的距离
 	 */
 	public void setRotateData(int index, int scrollY) {
-		//mIndex = index;
+		mIndex = index%6;
 		mScrollY = scrollY;
 //		yOffset = dy;
 //		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
@@ -239,11 +239,11 @@ public class CircleImage3DView extends ImageView {
 		if (getDrawable() == null) {
             //return;
 			super.onDraw(canvas);
-        }else if(isImageVisible()) {
-            	int[] location=new int[2];
-            	getLocationOnScreen(location);
-            	yOffset = location[1];
-            	Log.d("CircleImage3DView", location[0] + "  "+ location[1]);
+        }else {
+//            	int[] location=new int[2];
+//            	getLocationOnScreen(location);
+//            	yOffset = location[1];
+//            	Log.d("CircleImage3DView", location[0] + "  "+ location[1]);
             	computeRotateData();
     			mCamera.save(); //保存状态 不影响其他元素
     			mCamera.translate(0.0f, 0.0f, mDeep);
@@ -274,17 +274,17 @@ public class CircleImage3DView extends ImageView {
 	private void computeRotateData() {
 		float degreePerPix = BASE_DEGREE / mHeight;
 		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
-		if (yOffset < -260) {
-			mIndex = 0;
-		}else if (yOffset >= -260 && yOffset <= 280) {
-			mIndex = 1;
-		}else if (yOffset >= 280 && yOffset <= 820) {
-			mIndex = 2;
-		}else if (yOffset >= 820 && yOffset <= 1080) {
-			mIndex = 3;
-		}else if (yOffset > 1080) {
-			mIndex = 4;
-		}
+//		if (yOffset < -260) {
+//			mIndex = 0;
+//		}else if (yOffset >= -260 && yOffset <= 280) {
+//			mIndex = 1;
+//		}else if (yOffset >= 280 && yOffset <= 820) {
+//			mIndex = 2;
+//		}else if (yOffset >= 820 && yOffset <= 1080) {
+//			mIndex = 3;
+//		}else if (yOffset > 1080) {
+//			mIndex = 4;
+//		}
 		switch (mIndex) {
 		case 0:
 			xOffset = 0f;
