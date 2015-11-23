@@ -169,7 +169,13 @@ public class CircleImage3DView extends ImageView {
 	 *            当前图片在X轴方向滚动的距离
 	 */
 	public void setRotateData(int index, int scrollY) {
-		mIndex = index%6;
+		if (mReady) {
+			
+		}
+		mIndex = index / 6;
+		if (mIndex > 3) {
+			
+		}
 		mScrollY = scrollY;
 //		yOffset = dy;
 //		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
@@ -239,7 +245,8 @@ public class CircleImage3DView extends ImageView {
 		if (getDrawable() == null) {
             //return;
 			super.onDraw(canvas);
-        }else {
+        }else if (true) {
+
 //            	int[] location=new int[2];
 //            	getLocationOnScreen(location);
 //            	yOffset = location[1];
@@ -326,7 +333,6 @@ public class CircleImage3DView extends ImageView {
 				if (mScrollY > mHeight) {
 					mDeep = (mScrollY - mHeight) * deepPerPix;
 				}
-				xOffset = mDeep;
 			} else {
 				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 				mRotateDegree = -mScrollY * degreePerPix;
@@ -334,29 +340,25 @@ public class CircleImage3DView extends ImageView {
 				if (mScrollY < -mHeight) {
 					mDeep = -(mHeight + mScrollY) * deepPerPix;
 				}
-				xOffset = mDeep;
 			}
 			break;
 		case 3:
-			xOffset = 0f;
 			if (mScrollY < 0) {
 				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
+//				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
 				mDeep = -mScrollY * deepPerPix;
 			} else {
 				if (mScrollY > mHeight) {
 					mDy = mHeight;
-					mRotateDegree = 360f - (mScrollY - mHeight) * degreePerPix;
+//					mRotateDegree = 360f - (mScrollY - mHeight) * degreePerPix;
 				} else {
 					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-					mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
+//					mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
 				}
 				mDeep = 0;
 			}
-			break;
-			
+			break;			
 		case 4:
-			xOffset = 0f;
 			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
 			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
 			if (mScrollY > mHeight) {
