@@ -96,7 +96,7 @@
             android:layout_height="450dp"
             android:scaleType="fitXY"
             android:src="@drawable/image2" />
-
+		<!-- 
         <com.example.imageswitchviewtest.Image3DView
             android:id="@+id/image10"
             android:layout_width="match_parent"
@@ -110,7 +110,7 @@
             android:layout_height="450dp"
             android:scaleType="fitXY"
             android:src="@drawable/image4" />
-
+		
         <com.example.imageswitchviewtest.Image3DView
             android:id="@+id/image12"
             android:layout_width="match_parent"
@@ -131,6 +131,7 @@
             android:layout_height="450dp"
             android:scaleType="fitXY"
             android:src="@drawable/image7" />
+         -->
     </com.example.imageswitchviewtest.Image3DSwitchView>
 
 

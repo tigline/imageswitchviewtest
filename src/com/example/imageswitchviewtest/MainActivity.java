@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 //		});
 		
 		//circleImageSwitchView.setCurrentImage(1);
-		imageSwitchView.setCurrentImage(1);
+		imageSwitchView.setCurrentImage(0);
 	}
  
 	@Override

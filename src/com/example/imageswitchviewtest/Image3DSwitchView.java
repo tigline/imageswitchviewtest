@@ -97,9 +97,9 @@ public class Image3DSwitchView extends ViewGroup {
 		if (changed || forceToRelayout) {
 			mCount = getChildCount();
 			// 图片数量必须大于5，不然无法正常显示
-			if (mCount < 5) {
-				return;
-			}
+//			if (mCount < 5) {
+//				return;
+//			}
 			mWidth = getMeasuredWidth();  //控件实际宽度
 			mHeight = getMeasuredHeight();
 			Log.d("Image3DSwitchView", "mWidth = " + mWidth );
@@ -119,8 +119,16 @@ public class Image3DSwitchView extends ViewGroup {
 						getIndexForItem(5) };
 				mItems = items;
 				// 通过循环为每张图片设定位置
-				for (int i = 0; i < items.length; i++) {
-					Image3DView childView = (Image3DView) getChildAt(items[i]);
+//				for (int i = 0; i < items.length; i++) {
+//					Image3DView childView = (Image3DView) getChildAt(items[i]);
+//					childView.layout(0, top + IMAGE_PADDING, 
+//							mWidth, top + mImageHeight - IMAGE_PADDING);
+//					childView.initImageViewBitmap();
+//					top = top + mImageHeight;
+//					Log.d("Image3DSwitchView", "top = " + top );
+//				}
+				for (int i = 0; i < mCount; i++) {
+					Image3DView childView = (Image3DView) getChildAt(i);
 					childView.layout(0, top + IMAGE_PADDING, 
 							mWidth, top + mImageHeight - IMAGE_PADDING);
 					childView.initImageViewBitmap();
@@ -331,8 +339,13 @@ public class Image3DSwitchView extends ViewGroup {
 	 * 刷新所有图片的显示状态，包括当前的旋转角度。
 	 */
 	private void refreshImageShowing() {
-		for (int i = 0; i < mItems.length; i++) {
-			Image3DView childView = (Image3DView) getChildAt(mItems[i]);
+//		for (int i = 0; i < mItems.length; i++) {
+//			Image3DView childView = (Image3DView) getChildAt(mItems[i]);
+//			childView.setRotateData(i, getScrollY());//////////
+//			childView.invalidate();
+//		}
+		for (int i = 0; i < mCount; i++) {
+			Image3DView childView = (Image3DView) getChildAt(i);
 			childView.setRotateData(i, getScrollY());//////////
 			childView.invalidate();
 		}
@@ -343,9 +356,9 @@ public class Image3DSwitchView extends ViewGroup {
 	 */
 	private void checkImageSwitchBorder(int action) {
 		if (action == SCROLL_NEXT && ++mCurrentImage >= mCount) {
-			mCurrentImage = 0;
+			//mCurrentImage = 0;
 		} else if (action == SCROLL_PREVIOUS && --mCurrentImage < 0) {
-			mCurrentImage = mCount - 1;
+			//mCurrentImage = mCount - 1;
 		}
 	}
 

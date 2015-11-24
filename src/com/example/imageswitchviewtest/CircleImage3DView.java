@@ -36,6 +36,8 @@ public class CircleImage3DView extends ImageView {
 	 */
 	private static final float BASE_DEEP = 150f;
 	
+	private static final float BASE_SCALE = 0.4f;
+	
 	private static final ScaleType SCALE_TYPE = ScaleType.FIT_XY ;
 
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
@@ -105,6 +107,10 @@ public class CircleImage3DView extends ImageView {
 
 	private float yOffset;
 	
+	private float scaleX;
+	
+	private float scaleY;
+	
 	public CircleImage3DView(Context context) {
         super(context);
     }
@@ -157,7 +163,7 @@ public class CircleImage3DView extends ImageView {
 			mBitmap = getDrawingCache();
 		}
 		mLayoutHeight = CircleImage3DSwitchView.mHeight;				
-		mHeight = getHeight() + CircleImage3DSwitchView.IMAGE_PADDING * 2; 
+		mHeight = getHeight(); 
 	}
 
 	/**
@@ -172,7 +178,7 @@ public class CircleImage3DView extends ImageView {
 		if (mReady) {
 			
 		}
-		mIndex = index / 6;
+		mIndex = index / 6 ;
 		if (mIndex > 3) {
 			
 		}
@@ -247,11 +253,14 @@ public class CircleImage3DView extends ImageView {
 			super.onDraw(canvas);
         }else if (true) {
 
-//            	int[] location=new int[2];
-//            	getLocationOnScreen(location);
-//            	yOffset = location[1];
-//            	Log.d("CircleImage3DView", location[0] + "  "+ location[1]);
+            	int[] location=new int[2];
+            	getLocationOnScreen(location);
+            	yOffset = location[1];
+            	Log.d("CircleImage3DView", location[0] + "  "+ location[1]);
             	computeRotateData();
+            	setScaleX(scaleX);
+    			setScaleY(scaleY);
+    			
     			mCamera.save(); //保存状态 不影响其他元素
     			mCamera.translate(0.0f, 0.0f, mDeep);
     			mCamera.rotateX(360f-mRotateDegree);
@@ -281,93 +290,124 @@ public class CircleImage3DView extends ImageView {
 	private void computeRotateData() {
 		float degreePerPix = BASE_DEGREE / mHeight;
 		float deepPerPix = BASE_DEEP / ((mLayoutHeight - mHeight) / 2);
-//		if (yOffset < -260) {
-//			mIndex = 0;
-//		}else if (yOffset >= -260 && yOffset <= 280) {
-//			mIndex = 1;
-//		}else if (yOffset >= 280 && yOffset <= 820) {
-//			mIndex = 2;
-//		}else if (yOffset >= 820 && yOffset <= 1080) {
-//			mIndex = 3;
-//		}else if (yOffset > 1080) {
-//			mIndex = 4;
-//		}
-		switch (mIndex) {
-		case 0:
-			xOffset = 0f;
+		float scalePerPix = BASE_SCALE / ((mLayoutHeight - mHeight) / 2);
+		
+		if (yOffset < mLayoutHeight/2) {
+			scaleX = 1f;
+			scaleY = 1f;
 			mDy = mHeight;
-			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
-			if (mScrollY < -mHeight) {
-				mDeep = 0;
-			} else {
-				mDeep = (mHeight + mScrollY) * deepPerPix;
-				
+			mRotateDegree = 360f - mScrollY * degreePerPix;
+			mDeep = 0;
+			if (yOffset < mLayoutHeight/8) {
+				mDeep = (mScrollY - mHeight) * deepPerPix;
 			}
-			break;
-		case 1:	
-
-			//如果向上滑动至消失
-			if (mScrollY > 0) {   
-				mDy = mHeight;
-				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
-				mDeep = mScrollY * deepPerPix;
-				xOffset = mDeep;
-			} else {
-				//如果向下滑超过中框
-				if (mScrollY < -mHeight) {
-					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-					mRotateDegree = (-mScrollY - mHeight) * degreePerPix;
-				} else {
-					//未到中框
-					mDy = mHeight;
-					mRotateDegree = 360f - (mHeight + mScrollY) * degreePerPix;
-				}
-				mDeep = 0;
+		}else if (yOffset >= mLayoutHeight/2 && yOffset <= 7*mLayoutHeight/8) {
+			mDeep = 0;
+			mRotateDegree = 0;
+			if (scaleX < 1f) {
+				scaleX = 0.6f + mScrollY * scalePerPix;
+				scaleY = 0.6f + mScrollY * scalePerPix;
 			}
-			break;
-		case 2:
-			if (mScrollY > 0) {
-				mDy = mHeight;
-				mRotateDegree = 360f - mScrollY * degreePerPix;
-				mDeep = 0;
-				if (mScrollY > mHeight) {
-					mDeep = (mScrollY - mHeight) * deepPerPix;
-				}
-			} else {
-				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-				mRotateDegree = -mScrollY * degreePerPix;
-				mDeep = 0;
-				if (mScrollY < -mHeight) {
-					mDeep = -(mHeight + mScrollY) * deepPerPix;
-				}
-			}
-			break;
-		case 3:
-			if (mScrollY < 0) {
-				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
-				mDeep = -mScrollY * deepPerPix;
-			} else {
-				if (mScrollY > mHeight) {
-					mDy = mHeight;
-//					mRotateDegree = 360f - (mScrollY - mHeight) * degreePerPix;
-				} else {
-					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-//					mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
-				}
-				mDeep = 0;
-			}
-			break;			
-		case 4:
-			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
-			mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
-			if (mScrollY > mHeight) {
-				mDeep = 0;
-			} else {
-				mDeep = (mHeight - mScrollY) * deepPerPix;
-			}
-			break;
+		}else if (yOffset > 7*mLayoutHeight/8) {
+			mDeep = 0;
+			mRotateDegree = 0;
+			scaleX = 0.6f;
+			scaleY = 0.6f;
 		}
+
+//		switch (mIndex) {
+//		case 0:
+//			scaleX = 1f;
+//			scaleY = 1f;
+//			xOffset = 0f;
+//			mDy = mHeight;
+//			mRotateDegree = 360f - (2 * mHeight + mScrollY) * degreePerPix;
+//			if (mScrollY < -mHeight) {
+//				mDeep = 0;
+//			} else {
+//				mDeep = (mHeight + mScrollY) * deepPerPix;
+//				
+//			}
+//			break;
+//		case 1:	
+//			scaleX = 1f;
+//			scaleY = 1f;
+//			//如果向上滑动至消失
+//			if (mScrollY > 0) {   
+//				mDy = mHeight;
+//				mRotateDegree = (360f - BASE_DEGREE) - mScrollY * degreePerPix;
+//				mDeep = mScrollY * deepPerPix;
+//				xOffset = mDeep;
+//			} else {
+//				//如果向下滑超过中框
+//				if (mScrollY < -mHeight) {
+//					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+//					mRotateDegree = (-mScrollY - mHeight) * degreePerPix;
+//				} else {
+//					//未到中框
+//					mDy = mHeight;
+//					mRotateDegree = 360f - (mHeight + mScrollY) * degreePerPix;
+//				}
+//				mDeep = 0;
+//			}
+//			break;
+//		case 2:
+//			scaleX = 1f;
+//			scaleY = 1f;
+//			if (mScrollY > 0) {
+//				mDy = mHeight;
+//				mRotateDegree = 360f - mScrollY * degreePerPix;
+//				mDeep = 0;
+//				if (mScrollY > mHeight) {
+//					mDeep = (mScrollY - mHeight) * deepPerPix;
+//				}
+//			} else {
+//				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+//				mRotateDegree = -mScrollY * degreePerPix;
+//				mDeep = 0;
+//				if (mScrollY < -mHeight) {
+//					mDeep = -(mHeight + mScrollY) * deepPerPix;
+//				}
+//			}
+//			break;
+//		case 3:
+////			setScaleX(0.8f);
+////			setScaleY(0.8f);
+//			if (mScrollY < 0) {
+//				mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+////				mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
+//				//mDeep = -mScrollY * deepPerPix;
+//				scaleX = 1f - mScrollY * scalePerPix;
+//				scaleY = 1f - mScrollY * scalePerPix;
+//			} else {
+//				if (mScrollY > mHeight) {
+//					mDy = mHeight;
+//					mRotateDegree = 360f - (mScrollY - mHeight) * degreePerPix;
+//					//scaleX = 1 - mScrollY * scalePerPix;
+//				} else {
+//					mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+////					mRotateDegree = BASE_DEGREE - mScrollY * degreePerPix;
+//					if (scaleX < 1f) {
+//						scaleX = 0.6f + mScrollY * scalePerPix;
+//						scaleY = 0.6f + mScrollY * scalePerPix;
+//					}
+//					
+//				}
+//				//mDeep = 0;
+//			}
+//			break;			
+//		case 4:
+//			scaleX = 1f;
+//			scaleY = 1f;
+//			mDy = -CircleImage3DSwitchView.IMAGE_PADDING * 2;
+//			//mRotateDegree = (2 * mHeight - mScrollY) * degreePerPix;
+//			if (mScrollY > mHeight) {
+//				mDeep = 0;
+//			} else {
+//				mDeep = (mHeight - mScrollY) * deepPerPix;
+//			}
+//			break;
+//		}
 	}
 
 	
