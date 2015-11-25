@@ -1,3 +1,4 @@
+
 package com.example.imageswitchviewtest;
 
 import android.R.integer;
@@ -21,6 +22,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+
+
+
+
+
+
+
 
 /**
  * 
@@ -185,9 +193,15 @@ public class CircleImage3DView extends ImageView {
 	 *            当前图片在X轴方向滚动的距离
 	 */
 	public void setRotateData(int index, int scrollY) {
+
 		mIndex = index;
 		rowIndex = index%6;
 		//yOffset = location;
+
+
+//		yOffset = dy;
+//		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
+
 	}
 
 	/**
@@ -255,6 +269,7 @@ public class CircleImage3DView extends ImageView {
 		if (getDrawable() == null) {
             //return;
 			super.onDraw(canvas);
+
         }else if (isImageVisible()) {
 
         	int[] location=new int[2];
@@ -272,6 +287,10 @@ public class CircleImage3DView extends ImageView {
 			canvas.concat(mShaderMatrix);   			
         	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
             canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);     
+
+
+
+
         }
 
 	}
@@ -301,6 +320,7 @@ public class CircleImage3DView extends ImageView {
 			hoffset = (((mLayoutHeight - mHeight) / 2 - yOffset)/5) * offsetPerPix;
 			break;
 		case 2:
+
 			xOffset = (((mLayoutHeight - mHeight) / 2 - yOffset)/5) * offsetPerPix;
 			hoffset = (((mLayoutHeight - mHeight) / 2 - yOffset)*3f/5) * offsetPerPix;
 			break;
@@ -332,6 +352,7 @@ public class CircleImage3DView extends ImageView {
 		switch (index) {
 		case 0:
 			xOffset = -((mLayoutHeight - mItemHeight) / 2 - yOffset) * setPerPix;
+
 			break;
 		case 1:
 			xOffset = -(((mLayoutHeight - mItemHeight) / 2 - yOffset)*3/5) * setPerPix;

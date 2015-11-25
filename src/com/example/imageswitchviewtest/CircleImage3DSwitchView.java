@@ -1,14 +1,11 @@
+
 package com.example.imageswitchviewtest;
 
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
-
-
-
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,9 +19,17 @@ import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.Scroller;
+
+
+
+
+
+
+
 
 /**
  * 3D图片轮播器主控件。
@@ -113,7 +118,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 */
 	private boolean forceToRelayout;
 	private int[] mItems;
-
+	private LayoutInflater mInflater;
 	@SuppressLint("InflateParams") public CircleImage3DSwitchView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
@@ -121,20 +126,24 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
 		for (int i = 0; i < 30; i++) {
-			CircleImage3DView view = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_view, null);
+//			View view = LayoutInflater.from(getContext()).inflate(R.layout.photo_layout, null
+//			LayoutInflater.from(context).inflate(R.layout.circle_view, null);
+			View view = mInflater.inflate(R.layout.circle_view, null);
+			//CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.id.circle, null);
+			CircleImage3DView circle = (CircleImage3DView) findViewById(R.id.circle);
 			//circleList.add(view);
 			if (i < 6) {
-				view.setImageResource(R.drawable.row1);
+				circle.setImageResource(R.drawable.row1);
 			}else if (i >=6 && i < 12) {
-				view.setImageResource(R.drawable.row2);
+				circle.setImageResource(R.drawable.row2);
 			}else if (i >=12 && i < 18) {
-				view.setImageResource(R.drawable.row3);
+				circle.setImageResource(R.drawable.row3);
 			}
 			else if (i >=18 && i < 24) {
-				view.setImageResource(R.drawable.row4);
+				circle.setImageResource(R.drawable.row4);
 			}
 			else {
-				view.setImageResource(R.drawable.row5);
+				circle.setImageResource(R.drawable.row5);
 			}
 			addView(view);
 		}
@@ -186,7 +195,11 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
 				mScroller.abortAnimation();
 				setScrollY(0);
+
 				int top = (mHeight - mImageHeight) / 2;
+				//int top = (mHeight - mImageHeight) / 2;
+				Log.d("CircleImage3DSwitchView", "top = " + top );
+
 				// 分别获取每个位置上应该显示的图片下标
 				int[] items = { getIndexForItem(1), getIndexForItem(2),
 						getIndexForItem(3), getIndexForItem(4),
@@ -202,6 +215,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				}else {
 					mRow = 0;
 					mLeft = mCount;
+
 				}
 				for (int i = 0; i < mRow; i++) {
 						for (int j = 0; j < 6; j++) {
@@ -213,13 +227,21 @@ public class CircleImage3DSwitchView extends ViewGroup {
 							refreshImageShowing();
 							
 						}
-					top = top + mImageHeight;		
+
+					top = top + mImageHeight;
+					Log.d("CircleImage3DSwitchView", "top = " + top );				
+
 				}
 				for (int i = 0; i < mLeft; i++) {
 					
 					CircleImage3DView childView = (CircleImage3DView) getChildAt(i+mRow*6);
+
 					childView.layout(mWidth*i , top, mWidth*(i+1), top
 							+ mImageHeight);
+
+					childView.layout(mWidth*i , top + IMAGE_PADDING, mWidth*(i+1), top
+							+ mImageHeight - IMAGE_PADDING);
+
 					childView.initImageViewBitmap();
 					refreshImageShowing();
 				}
@@ -644,4 +666,5 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			return bitmap;
 		}
 	}
+
 }
