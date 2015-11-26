@@ -3,14 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#473C8B" >
+>
     
    
-    <com.example.imageswitchviewtest.CircleImage3DSwitchView
-        android:id="@+id/image_switch_view_clone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.example.imageswitchviewtest.CircleImage3DSwitchView>
+    
     
    <Button 
         android:id="@+id/previous"
@@ -19,6 +15,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="@string/prev"
+        
         />
     <Button 
         android:id="@+id/next"
@@ -28,4 +25,11 @@
         android:layout_alignParentTop="true"
         android:text="@string/next"
         />
+    <com.example.imageswitchviewtest.CircleImage3DSwitchView
+        android:id="@+id/image_switch_view_clone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </com.example.imageswitchviewtest.CircleImage3DSwitchView>
+    
 </RelativeLayout>

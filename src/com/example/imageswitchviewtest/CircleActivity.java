@@ -31,7 +31,7 @@ public class CircleActivity extends Activity implements OnClickListener{
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_circleh);
         circleImageSwitchView = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_clone);
-        
+        //circleImageSwitchView.initLayout();
         prev_bt = (Button) findViewById(R.id.previous);
         next_bt = (Button) findViewById(R.id.next);
         prev_bt.setOnClickListener(this);

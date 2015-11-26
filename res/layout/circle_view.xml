@@ -1,22 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/item">
+    android:layout_height="match_parent" 
+     >
+
+    <com.example.imageswitchviewtest.CircleImage3DView
+        android:id="@+id/circle"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:src="@drawable/image2"
+        app:border_color="@color/light"
+        app:border_width="2dp" />
     
-    <com.example.imageswitchviewtest.CircleImage3DView 
-	    
-	    android:id="@+id/circle"
-	    android:layout_width="110dp"
-	    android:layout_height="match_parent"
-	    android:src="@drawable/image2"
-	    app:border_width="2dp"
-	    app:border_color="@color/light"  >
-    
-
-	</com.example.imageswitchviewtest.CircleImage3DView>
-
-</RelativeLayout>
-
-
-
+</LinearLayout>
