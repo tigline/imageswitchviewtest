@@ -5,9 +5,13 @@
     android:layout_height="match_parent"
 >
     
-   
-    
-    
+   <com.example.imageswitchviewtest.CircleImage3DSwitchView
+        android:id="@+id/image_switch_view_clone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </com.example.imageswitchviewtest.CircleImage3DSwitchView>
+
    <Button 
         android:id="@+id/previous"
         android:layout_width="wrap_content"
@@ -25,11 +29,6 @@
         android:layout_alignParentTop="true"
         android:text="@string/next"
         />
-    <com.example.imageswitchviewtest.CircleImage3DSwitchView
-        android:id="@+id/image_switch_view_clone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-    </com.example.imageswitchviewtest.CircleImage3DSwitchView>
+    
     
 </RelativeLayout>

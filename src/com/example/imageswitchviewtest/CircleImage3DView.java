@@ -281,8 +281,7 @@ public class CircleImage3DView extends ImageView {
         	getLocationOnScreen(location);
         	yOffset = location[1];
         	Log.d("CircleImage3DView", "yOffset = " + yOffset );
-        	computeRotateData();
-			
+        	computeRotateData();			
 			mCamera.save(); //保存状态 不影响其他元素
 			mCamera.translate(0.0f, 0.0f, mDeep);
 			mCamera.rotateX(360f-mRotateDegree);
@@ -293,10 +292,6 @@ public class CircleImage3DView extends ImageView {
 			canvas.concat(mShaderMatrix);   			
         	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
             canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);     
-            
-
-
-
         }
 
 	}
@@ -486,11 +481,8 @@ public class CircleImage3DView extends ImageView {
 
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
         mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
-//        mLayoutHeight = CircleImage3DSwitchView.mHeight;
-//        Log.d("CircleImage3DView", "mLayoutHeight = " + mLayoutHeight);
-//		mHeight = getWidth();
-//		Log.d("CircleImage3DView", "mHeight = " + mHeight);
-        updateShaderMatrix();
+
+        updateShaderMatrix(); 
         invalidate();  //刷新数据调用onDraw()重绘 
     }
     
