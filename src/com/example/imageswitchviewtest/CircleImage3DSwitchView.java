@@ -133,7 +133,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		mScroller = new Scroller(context);
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 22; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_item, null);
 			
 			if (i < 6) {
@@ -151,9 +151,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			addView(circle);
 			
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 22; i++) {
 			TextView textView = (TextView) LayoutInflater.from(context).inflate(R.layout.voice_item_text, null);
-			textView.setText("Circle_item_" + i);
+			textView.setText("circle_item_" + i);
 			addView(textView);
 		}
 	}
@@ -194,10 +194,12 @@ public class CircleImage3DSwitchView extends ViewGroup {
 //		        setMeasuredDimension(widthSpecSize, heightSpecSize);
 //			}
 //	}
+
+	
 	@SuppressLint("InflateParams") 
-	public void addCircleItemView() {
-		CircleImage3DView view = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_view, null);
+	public void addCircleViewItem() {
 		
+		CircleImage3DView view = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);	
 		addView(view);
 		refreshImageShowing();
 		
@@ -233,11 +235,10 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				for (int i = 0; i < mRow; i++) {
 						for (int j = 0; j < 6; j++) {
 							CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);							
-							circle.layout(mWidth*j , top + IMAGE_PADDING, mWidth*(j+1), top
-									+ mImageHeight - IMAGE_PADDING);
-							TextView textView = (TextView) getChildAt(20+j+i*6);
-							textView.layout(mWidth*j , top + IMAGE_PADDING, mWidth*(j+1), top
-									+ mImageHeight - IMAGE_PADDING);
+							circle.layout(mWidth*j , top, mWidth*(j+1), top
+									+ mImageHeight );
+							TextView textView = (TextView) getChildAt(mCount/2 + j + i*6);
+							textView.layout(mWidth*j , top + mImageHeight , mWidth*(j+1), top + 2*mImageHeight);
 							circle.initImageViewBitmap();
 							refreshImageShowing();							
 						}
@@ -245,11 +246,10 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				}
 				for (int i = 0; i < mLeft; i++) {										
 					CircleImage3DView circle = (CircleImage3DView) getChildAt(i+mRow*6);
-					TextView textView = (TextView) getChildAt(20 +i+mRow*6);
-					circle.layout(mWidth*i , top + IMAGE_PADDING, mWidth*(i+1), top
-							+ mImageHeight - IMAGE_PADDING);
-					textView.layout(mWidth*i , top + IMAGE_PADDING, mWidth*(i+1), top
-							+ mImageHeight - IMAGE_PADDING);
+					TextView textView = (TextView) getChildAt(mCount/2 + i + mRow*6);
+					circle.layout(mWidth*i , top , mWidth*(i+1), top
+							+ mImageHeight );
+					textView.layout(mWidth*i , top + mImageHeight , mWidth*(i+1), top + 2*mImageHeight);
 					circle.initImageViewBitmap();
 					refreshImageShowing();
 				}				
@@ -469,8 +469,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			//CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
 
 			CircleImage3DView circle = (CircleImage3DView) getChildAt(i);
-			TextView textView = (TextView) getChildAt(20 + i);
-			circle.setRotateData(i, getScrollY());			
+			TextView textView = (TextView) getChildAt(mCount/2 + i);
+			circle.setRotateData(i, getScrollY() , textView);
+			
 			circle.invalidate();  //UI线程中刷新view	
 			textView.invalidate();
 		}

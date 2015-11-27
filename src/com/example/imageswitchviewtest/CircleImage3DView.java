@@ -21,6 +21,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.TextView;
 
 
 
@@ -43,7 +44,9 @@ public class CircleImage3DView extends ImageView {
 	 */
 	private static final float BASE_DEEP = 240f;
 	
-	private static final float BASE_SCALE = 160f;
+	private static final float BASE_SCALE = 0.4f;
+	
+	private static final float BASE_OFFSET = 160f;
 	
 	private static final ScaleType SCALE_TYPE = ScaleType.FIT_XY ;
 
@@ -62,7 +65,7 @@ public class CircleImage3DView extends ImageView {
 
     private int mBorderColor = DEFAULT_BORDER_COLOR;
     private int mBorderWidth = DEFAULT_BORDER_WIDTH;
-	
+
     private BitmapShader mBitmapShader;
     /**
      * 图片宽度
@@ -112,6 +115,8 @@ public class CircleImage3DView extends ImageView {
 	/**
 	 * 旋转的深度
 	 */
+	private TextView currentText;
+	
 	private float mItemHeight;
 	
 	private float mDeep;
@@ -174,11 +179,11 @@ public class CircleImage3DView extends ImageView {
 	 * 初始化Image3DView所需要的信息，包括图片宽度，截取背景图等。
 	 */
 	public void initImageViewBitmap() {
-		if (mBitmap == null) {
-			setDrawingCacheEnabled(true);
-			buildDrawingCache();
-			mBitmap = getDrawingCache();
-		}
+//		if (mBitmap == null) {
+//			setDrawingCacheEnabled(true);
+//			buildDrawingCache();
+//			mBitmap = getDrawingCache();
+//		}
 		mLayoutHeight = CircleImage3DSwitchView.mHeight;
 		mItemHeight = CircleImage3DSwitchView.mImageHeight;
 		Log.d("CircleImage3DView", "mItemHeight = " + mItemHeight );
@@ -192,12 +197,13 @@ public class CircleImage3DView extends ImageView {
 	 * 
 	 * @param index
 	 *            当前图片的下标
+	 * @param textView 
 	 * @param location 
 	 * @param scrollX
 	 *            当前图片在X轴方向滚动的距离
 	 */
-	public void setRotateData(int index, int scrollY) {
-
+	public void setRotateData(int index, int scrollY, TextView textView) {
+		currentText = textView;
 		mIndex = index;
 		rowIndex = index%6;
 		//yOffset = location;
@@ -284,6 +290,8 @@ public class CircleImage3DView extends ImageView {
         	computeRotateData();			
 			mCamera.save(); //保存状态 不影响其他元素
 			mCamera.translate(0.0f, 0.0f, mDeep);
+			setScaleX(scaleX);
+			setScaleY(scaleX);
 			mCamera.rotateX(360f-mRotateDegree);
 			mCamera.getMatrix(mShaderMatrix);
 			mCamera.restore(); //取出状态
@@ -308,16 +316,17 @@ public class CircleImage3DView extends ImageView {
 	 * @param mIndex
 	 * @param offsetPerPix 
 	 */
-	private void computeTopOffsetData(float offsetPerPix) {
+	private void computeTopOffsetData() {
 		
 		// TODO Auto-generated method stub
 		//Log.d("CircleImage3DView", "mIndex = " + mIndex );
+		float offsetPerPix = BASE_OFFSET / ((mLayoutHeight - mItemHeight)/2);
 		int index = mIndex % 6;
 		float hoffset = 0;
 		switch (index) {
 		case 0:
 			xOffset = ((mLayoutHeight - mHeight) / 2 - yOffset) * offsetPerPix;
-			hoffset = 0f;
+			hoffset = (((mLayoutHeight - mHeight) / 2 - yOffset)*0.5f/5) * offsetPerPix;
 			break;
 		case 1:
 			xOffset = (((mLayoutHeight - mHeight) / 2 - yOffset)*3/5) * offsetPerPix;
@@ -338,7 +347,7 @@ public class CircleImage3DView extends ImageView {
 			break;
 		case 5:
 			xOffset = -((mLayoutHeight - mHeight) / 2 - yOffset) * offsetPerPix;
-			hoffset = 0f;
+			hoffset = (((mLayoutHeight - mHeight) / 2 - yOffset)*0.5f/5) * offsetPerPix;;
 			break;
 		default:
 			break;
@@ -383,26 +392,37 @@ public class CircleImage3DView extends ImageView {
 	 * 在这里计算所有旋转所需要的数据。
 	 */
 	private void computeRotateData() {
-		float degreePerPix = BASE_DEGREE / mHeight;
+		float degreePerPix = BASE_DEGREE / mItemHeight;
 		float deepPerPix = BASE_DEEP / mItemHeight;
-		float offsetPerPix = BASE_SCALE / ((mLayoutHeight - mHeight) / 2);
+		float scalePerPix = BASE_SCALE / mItemHeight;
+
 		
 		if (yOffset <= (mLayoutHeight - mItemHeight) / 2) {
-			
+			currentText.setVisibility(VISIBLE);
 			mDy = mHeight;
 			mRotateDegree = 360f - ((mLayoutHeight - mItemHeight) / 2 - yOffset) * degreePerPix;
 			mDeep = 0;
+			scaleX = 1f;
+			if (yOffset < (mLayoutHeight - mItemHeight) / 2-10) {
+				
+			}
 			if (yOffset < (mLayoutHeight - mItemHeight) / 2-mItemHeight) {
+				currentText.setVisibility(INVISIBLE);
 				mDeep = ((mLayoutHeight - mItemHeight) / 2 - yOffset) * deepPerPix;
 			}
-			computeTopOffsetData(offsetPerPix);
+			computeTopOffsetData();
 		}else if (yOffset >= (mLayoutHeight - mItemHeight) / 2 && yOffset <= (mLayoutHeight + mItemHeight) / 2 ) {
+			currentText.setVisibility(VISIBLE);
+			scaleX = 1f - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
+			
 			mRotateDegree = 0;
 			xOffset = 0;
-			mDeep = (yOffset - (mLayoutHeight - mItemHeight) / 2) * deepPerPix;
+			mDeep = 0;
 			computeBottomOffsetData();
+			
 		}else if (yOffset >= (mLayoutHeight + mItemHeight) / 2) {
-			mDeep = BASE_DEEP;
+			scaleX = 0.6f;
+			mDeep = 0;
 			mRotateDegree = 0;
 			computeBottomOffsetData();			
 		}
@@ -511,5 +531,7 @@ public class CircleImage3DView extends ImageView {
         
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
+
+
 
 }
