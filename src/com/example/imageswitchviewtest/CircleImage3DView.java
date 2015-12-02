@@ -142,7 +142,7 @@ public class CircleImage3DView extends ImageView {
 		super(context, attrs, defStyle);
 		super.setScaleType(SCALE_TYPE);
 		setWillNotDraw(false);
-		Log.d("CircleImage3DView", "CircleImage3DView() construct" );
+
 		
 		mCamera = new Camera();		
 		mShaderMatrix = new Matrix();
@@ -186,9 +186,9 @@ public class CircleImage3DView extends ImageView {
 //		}
 		mLayoutHeight = CircleImage3DSwitchView.mHeight;
 		mItemHeight = CircleImage3DSwitchView.mImageHeight;
-		Log.d("CircleImage3DView", "mItemHeight = " + mItemHeight );
+
 		mHeight = getHeight();
-		Log.d("CircleImage3DView", "mHeight = " + mHeight + " " + getHeight() );
+
 		
 	}
 
@@ -202,8 +202,8 @@ public class CircleImage3DView extends ImageView {
 	 * @param scrollX
 	 *            当前图片在X轴方向滚动的距离
 	 */
-	public void setRotateData(int index, int scrollY, TextView textView) {
-		currentText = textView;
+	public void setRotateData(int index, int scrollY) {
+
 		mIndex = index;
 		rowIndex = index%6;
 		//yOffset = location;
@@ -286,7 +286,6 @@ public class CircleImage3DView extends ImageView {
         	int[] location=new int[2];
         	getLocationOnScreen(location);
         	yOffset = location[1];
-        	Log.d("CircleImage3DView", "yOffset = " + yOffset );
         	computeRotateData();			
 			mCamera.save(); //保存状态 不影响其他元素
 			mCamera.translate(0.0f, 0.0f, mDeep);
@@ -398,7 +397,7 @@ public class CircleImage3DView extends ImageView {
 
 		
 		if (yOffset <= (mLayoutHeight - mItemHeight) / 2) {
-			currentText.setVisibility(VISIBLE);
+
 			mDy = mHeight;
 			mRotateDegree = 360f - ((mLayoutHeight - mItemHeight) / 2 - yOffset) * degreePerPix;
 			mDeep = 0;
@@ -407,12 +406,12 @@ public class CircleImage3DView extends ImageView {
 				
 			}
 			if (yOffset < (mLayoutHeight - mItemHeight) / 2-mItemHeight) {
-				currentText.setVisibility(INVISIBLE);
+				
 				mDeep = ((mLayoutHeight - mItemHeight) / 2 - yOffset) * deepPerPix;
 			}
 			computeTopOffsetData();
 		}else if (yOffset >= (mLayoutHeight - mItemHeight) / 2 && yOffset <= (mLayoutHeight + mItemHeight) / 2 ) {
-			currentText.setVisibility(VISIBLE);
+
 			scaleX = 1f - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
 			
 			mRotateDegree = 0;

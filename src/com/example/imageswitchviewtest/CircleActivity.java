@@ -54,10 +54,12 @@ public class CircleActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.previous:
-			circleImageSwitchView.scrollToPrevious();
+			circleImageSwitchView.decListView();
+
 			break;
 		case R.id.next:
-			circleImageSwitchView.scrollToNext();
+			circleImageSwitchView.addListView();
+
 			break;
 		default:
 			break;

@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".InitActivity"
+            android:name=".CircleActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.imageswitchviewtest.ImageActivity"/>
-        <activity android:name="com.example.imageswitchviewtest.CircleActivity"/>
+        <activity android:name="com.example.imageswitchviewtest.InitActivity"/>
         <activity android:name="com.example.imageswitchviewtest.MainActivity"/>
     </application>
 

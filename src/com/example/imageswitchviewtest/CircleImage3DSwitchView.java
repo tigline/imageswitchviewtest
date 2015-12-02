@@ -41,15 +41,7 @@ import android.widget.TextView;
  */
 public class CircleImage3DSwitchView extends ViewGroup {
 
-	/**
-	 * 记录所有正在下载或等待下载的任务。
-	 */
-	private Set<BitmapWorkerTask> taskCollection;
 
-	/**
-	 * 图片缓存技术的核心类，用于缓存所有下载好的图片，在程序内存达到设定值时会将最少最近使用的图片移除掉。
-	 */
-	private LruCache<String, Bitmap> mMemoryCache;
 	/**
 	 * 图片左右两边的空白间距 
 	 */
@@ -106,6 +98,8 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	private int mRow;
 	private int mCount;
 	private int mLeft;
+	private static int addRowCount = 0;
+	private static int startCount = 0;
 	/**
 	 * 记录当前显示图片的坐标
 	 */
@@ -118,7 +112,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	/**
 	 * 是否强制重新布局
 	 */
-	private boolean forceToRelayout;
+	private boolean forceToRelayout = true;
 	
 
 	
@@ -127,13 +121,12 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public CircleImage3DSwitchView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		setFocusable(true);
 		
 		mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 		mScroller = new Scroller(context);
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
-		for (int i = 0; i < 22; i++) {
+		for (int i = 0; i < 12; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_item, null);
 			
 			if (i < 6) {
@@ -147,21 +140,19 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			}else {
 				circle.setImageResource(R.drawable.row5);
 			}
-			
+			circleList.add(circle);
 			addView(circle);
 			
 		}
-		for (int i = 0; i < 22; i++) {
-			TextView textView = (TextView) LayoutInflater.from(context).inflate(R.layout.voice_item_text, null);
-			textView.setText("circle_item_" + i);
-			addView(textView);
-		}
+
 	}
 
 	@SuppressLint("InflateParams") 
-	public void initLayout() {
-		Log.d("CircleImage3DSwitchView", "initLayout()" );
-		for (int i = 0; i < 20; i++) {
+	public void addListView() {
+		
+		addRowCount++;
+		Log.d("CircleImage3DSwitchView", "addListView() addRowCount = " + addRowCount );
+		for (int i = 0; i < 6; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);
 
 			if (i < 6) {
@@ -177,38 +168,20 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			else {
 				circle.setImageResource(R.drawable.row5);
 			}
+			circleList.add(circle);
 			addView(circle);
 		}
 	}
-	
-//	@Override
-//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//	// TODO Auto-generated method stub
-//		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//		int widthSpecSize =  MeasureSpec.getSize(widthMeasureSpec);
-//        int heightSpecSize =  MeasureSpec.getSize(heightMeasureSpec);
-//		final int count = getChildCount();
-//		for (int i = 0; i < count; i++) {
-//		        View child=getChildAt(i);
-//		        child.measure(widthMeasureSpec, heightMeasureSpec);
-//		        setMeasuredDimension(widthSpecSize, heightSpecSize);
-//			}
-//	}
-
-	
-	@SuppressLint("InflateParams") 
-	public void addCircleViewItem() {
-		
-		CircleImage3DView view = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);	
-		addView(view);
-		refreshImageShowing();
+	public void decListView() {
 		
 	}
+	
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-//		Log.d("CircleImage3DSwitchView", "onLayout()" );
+		Log.d("CircleImage3DSwitchView", "onLayout()" );
 		if (changed || forceToRelayout) {
 			mCount = getChildCount();
+			Log.d("CircleImage3DSwitchView", "mCount = " + mCount );
 			mWidth = getMeasuredWidth() / 6; //每个控件宽度
 			mHeight = getMeasuredHeight();
 			// 每张图片的高度设定为控件高度的百分之
@@ -217,28 +190,25 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				mScroller.abortAnimation();
 				setScrollY(0);
 				int top = (mHeight - mImageHeight) / 2;
-				// 分别获取每个位置上应该显示的图片下标
-				int[] items = { getIndexForItem(1), getIndexForItem(2),
-						getIndexForItem(3), getIndexForItem(4),
-						getIndexForItem(5),
-						getIndexForItem(6), getIndexForItem(7),
-						getIndexForItem(8), getIndexForItem(9),
-						getIndexForItem(10)};
 				// 通过循环为每张图片设定位置
 				if (mCount > 6) {
-					mRow = (mCount/2) / 6;
-					mLeft = mCount/2 - mRow * 6;
+					mRow = mCount / 6;
+					mLeft = mCount - mRow * 6;
+					if (mCount > 18) {
+						top = top - mImageHeight;
+					}
 				}else {
 					mRow = 0;
-					mLeft = mCount/2;
+					mLeft = mCount;
 				}
-				for (int i = 0; i < mRow; i++) {
+				if (mCount > 24) {
+					startCount = mCount/6 - 3;
+				}
+				for (int i = (startCount-1)*6; i < mRow; i++) {
 						for (int j = 0; j < 6; j++) {
 							CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);							
 							circle.layout(mWidth*j , top, mWidth*(j+1), top
 									+ mImageHeight );
-							TextView textView = (TextView) getChildAt(mCount/2 + j + i*6);
-							textView.layout(mWidth*j , top + mImageHeight , mWidth*(j+1), top + 2*mImageHeight);
 							circle.initImageViewBitmap();
 							refreshImageShowing();							
 						}
@@ -246,18 +216,21 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				}
 				for (int i = 0; i < mLeft; i++) {										
 					CircleImage3DView circle = (CircleImage3DView) getChildAt(i+mRow*6);
-					TextView textView = (TextView) getChildAt(mCount/2 + i + mRow*6);
 					circle.layout(mWidth*i , top , mWidth*(i+1), top
 							+ mImageHeight );
-					textView.layout(mWidth*i , top + mImageHeight , mWidth*(i+1), top + 2*mImageHeight);
 					circle.initImageViewBitmap();
 					refreshImageShowing();
 				}				
 			}
-			forceToRelayout = false;
+			//forceToRelayout = false;
+			
+		}
+		if (addRowCount > 0) {
+			scrollToNext();
 		}
 	}
-
+	
+	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -465,15 +438,15 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 * 刷新所有图片的显示状态，包括当前的旋转角度。
 	 */
 	private void refreshImageShowing() {
-		for (int i = 0; i < mCount/2; i++) {
+		for (int i = (startCount-1)*6; i < mCount; i++) {
 			//CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
 
 			CircleImage3DView circle = (CircleImage3DView) getChildAt(i);
-			TextView textView = (TextView) getChildAt(mCount/2 + i);
-			circle.setRotateData(i, getScrollY() , textView);
+
+			circle.setRotateData(i, getScrollY());
 			
 			circle.invalidate();  //UI线程中刷新view	
-			textView.invalidate();
+
 		}
 	}
 
@@ -516,164 +489,6 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		void onImageSwitch(int currentImage);
 
 	}
-	private void setImageView(String imageUrl, CircleImageView imageView) {
-		Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
-		if (bitmap != null) {
-			imageView.setImageBitmap(bitmap);
-		} else {
-			imageView.setImageResource(R.drawable.empty_photo);
-		}
-	}
-
-	/**
-	 * 将一张图片存储到LruCache中。
-	 * 
-	 * @param key
-	 *            LruCache的键，这里传入图片的URL地址。
-	 * @param bitmap
-	 *            LruCache的键，这里传入从网络上下载的Bitmap对象。
-	 */
-	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-		if (getBitmapFromMemoryCache(key) == null) {
-			mMemoryCache.put(key, bitmap);
-		}
-	}
-
-	/**
-	 * 从LruCache中获取一张图片，如果不存在就返回null。
-	 * 
-	 * @param key
-	 *            LruCache的键，这里传入图片的URL地址。
-	 * @return 对应传入键的Bitmap对象，或者null。
-	 */
-	public Bitmap getBitmapFromMemoryCache(String key) {
-		return mMemoryCache.get(key);
-	}
 	
-
-	/**
-	 * 加载Bitmap对象。此方法会在LruCache中检查所有屏幕中可见的ImageView的Bitmap对象，
-	 * 如果发现任何一个ImageView的Bitmap对象不在缓存中，就会开启异步线程去下载图片。
-	 * 
-	 * @param firstVisibleItem
-	 *            第一个可见的ImageView的下标
-	 * @param visibleItemCount
-	 *            屏幕中总共可见的元素数
-	 * @param context 
-	 */
-	private void loadBitmaps(int firstVisibleItem, int visibleItemCount, Context context) {
-		try {
-			for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
-	
-				String imageUrl = Images.imageThumbUrls[i];
-				Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
-				if (bitmap == null) {
-
-					BitmapWorkerTask task = new BitmapWorkerTask();
-					taskCollection.add(task);
-					task.execute(imageUrl);
-				} else {
-
-					//ImageView imageView = (ImageView) mPhotoWall.findViewWithTag(imageUrl);
-					CircleImage3DView imageView = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_view, null);
-					imageView.setImageBitmap(bitmap);
-					addView(imageView);
-					postInvalidate();
-					if (imageView != null && bitmap != null) {
-
-						imageView.setImageBitmap(bitmap);
-						
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * 取消所有正在下载或等待下载的任务。
-	 */
-	public void cancelAllTasks() {
-		if (taskCollection != null) {
-			for (BitmapWorkerTask task : taskCollection) {
-				task.cancel(false);
-			}
-		}
-	}
-	
-	/**
-	 * 异步下载图片的任务。
-	 * 
-	 * @author guolin
-	 */
-	class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
-
-		/**
-		 * 图片的URL地址
-		 */
-		private String imageUrl;
-
-		@Override
-		protected Bitmap doInBackground(String... params) {
-
-			imageUrl = params[0];
-			// 在后台开始下载图片
-			Bitmap bitmap = downloadBitmap(params[0]);
-			if (bitmap != null) {
-
-				// 图片下载完成后缓存到LrcCache中
-				addBitmapToMemoryCache(params[0], bitmap);
-			}
-			return bitmap;
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap bitmap) {
-			super.onPostExecute(bitmap);
-
-			// 根据Tag找到相应的ImageView控件，将下载好的图片显示出来。
-			//CircleImage3DView imageView = (CircleImage3DView) this.findViewWithTag(imageUrl);
-			CircleImage3DView imageView = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_view, null);
-			imageView.setImageBitmap(bitmap);
-			addView(imageView);
-			postInvalidate();
-			if (imageView != null && bitmap != null) {
-
-				imageView.setImageBitmap(bitmap);
-			}
-			taskCollection.remove(this);
-		}
-
-		/**
-		 * 建立HTTP请求，并获取Bitmap对象。
-		 * 
-		 * @param imageUrl
-		 *            图片的URL地址
-		 * @return 解析后的Bitmap对象
-		 */
-		private Bitmap downloadBitmap(String imageUrl) {
-
-			Bitmap bitmap = null;
-			HttpURLConnection con = null;
-			try {
-
-				URL url = new URL(imageUrl);
-				con = (HttpURLConnection) url.openConnection();
-				con.setConnectTimeout(5 * 1000);
-				con.setReadTimeout(10 * 1000);
-				con.setDoInput(true);
-				con.setDoOutput(true);
-				bitmap = BitmapFactory.decodeStream(con.getInputStream());
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (con != null) {
-					con.disconnect();
-				}
-			}
-			return bitmap;
-		}
-	}
 
 }
