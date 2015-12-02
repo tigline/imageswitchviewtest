@@ -1,6 +1,7 @@
 
 package com.example.imageswitchviewtest;
 
+import android.R.integer;
 import android.content.Context;
 import android.content.res.TypedArray;
 
@@ -22,13 +23,6 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
-
-
-
-
-
-
-
 
 /**
  * 
@@ -128,6 +122,8 @@ public class CircleImage3DView extends ImageView {
 	private float scaleX;
 	
 	private float scaleY;
+	
+	
 	
 	public CircleImage3DView(Context context) {
         super(context);
@@ -355,6 +351,39 @@ public class CircleImage3DView extends ImageView {
 		setTranslationY(-hoffset);
 
 	}
+	/**
+	 * count scale 1f*6
+	 * 0.7f 0.8f 1.1f 1.4f 1.2f 0.8f
+	 */
+	private void computeMidOffsetData() {
+		
+		int index = mIndex % 6;
+		switch (index) {
+		case 0:	
+			scaleX = 0.7f;
+			
+			break;
+		case 1:
+			scaleX = 0.8f;
+			
+			break;
+		case 2:
+			scaleX = 1.1f;
+			break;
+		case 3:	
+			scaleX = 1.4f;
+			break;
+		case 4:	
+			scaleX = 1.2f;
+			break;
+		case 5:		
+			scaleX = 0.8f;
+			break;
+		default:
+			break;
+			
+		}
+	}
 	
 	private void computeBottomOffsetData() {
 		// TODO Auto-generated method stub
@@ -364,7 +393,6 @@ public class CircleImage3DView extends ImageView {
 		switch (index) {
 		case 0:
 			xOffset = -((mLayoutHeight - mItemHeight) / 2 - yOffset) * setPerPix;
-
 			break;
 		case 1:
 			xOffset = -(((mLayoutHeight - mItemHeight) / 2 - yOffset)*3/5) * setPerPix;
@@ -409,17 +437,24 @@ public class CircleImage3DView extends ImageView {
 				
 				mDeep = ((mLayoutHeight - mItemHeight) / 2 - yOffset) * deepPerPix;
 			}
-			computeTopOffsetData();
+				computeTopOffsetData();
+			if (yOffset == (mLayoutHeight - mItemHeight) / 2) {
+				
+			}
+			//computeMidOffsetData();
 		}else if (yOffset >= (mLayoutHeight - mItemHeight) / 2 && yOffset <= (mLayoutHeight + mItemHeight) / 2 ) {
-
 			scaleX = 1f - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
-			
+			if (yOffset == (mLayoutHeight - mItemHeight) / 2) {
+				
+			}
+			//computeMidOffsetData();
 			mRotateDegree = 0;
 			xOffset = 0;
 			mDeep = 0;
 			computeBottomOffsetData();
 			
 		}else if (yOffset >= (mLayoutHeight + mItemHeight) / 2) {
+			//computeMidOffsetData();
 			scaleX = 0.6f;
 			mDeep = 0;
 			mRotateDegree = 0;

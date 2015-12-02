@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Set;
 
 
+import android.R.integer;
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,6 +50,8 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public static final int IMAGE_PADDING = 10;
 	private static final int TOUCH_STATE_REST = 0;
 	private static final int TOUCH_STATE_SCROLLING = 1;
+	private boolean CANSCROLLTONEXT = false;
+	private boolean CANSCROLLTOPREV = false;
 	/**
 	 * 滚动到下一张图片的速度
 	 */
@@ -88,6 +92,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 */
 	public ArrayList<View> circleList = new ArrayList<View>();
 	public static int mHeight;
+	
 	/**
 	 * 记录每张图片的宽度
 	 */
@@ -100,6 +105,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	private int mLeft;
 	private static int addRowCount = 0;
 	private static int startCount = 0;
+	private static int mCurrentRow = 0;
 	/**
 	 * 记录当前显示图片的坐标
 	 */
@@ -151,6 +157,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public void addListView() {
 		
 		addRowCount++;
+		CANSCROLLTONEXT = true;
 		Log.d("CircleImage3DSwitchView", "addListView() addRowCount = " + addRowCount );
 		for (int i = 0; i < 6; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);
@@ -174,6 +181,24 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	}
 	public void decListView() {
 		
+		Log.d("CircleImage3DSwitchView", "decListView() ");
+		CANSCROLLTOPREV = true;
+		int cout = mCount;
+		for (int i = mCount-6; i < mCount; i++) {
+//			CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
+//			circle.recycleBitmap();
+//			//circleList.remove(i);
+			this.removeViewAt(0);
+		}
+		for (int i = cout-6; i < cout; i++) {
+			circleList.remove(i);
+		}
+		addRowCount--;
+//		if (mCount > 12 && addRowCount > 0) {
+//			addRowCount--;
+//			scrollToPrevious();
+//		}
+		
 	}
 	
 	@Override
@@ -186,7 +211,8 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			mHeight = getMeasuredHeight();
 			// 每张图片的高度设定为控件高度的百分之
 			mImageHeight = (int) (mHeight * 0.42);
-			if (mCurrentImage >= 0 && mCurrentImage < mCount) {
+			if (mCurrentRow >= 0 && mCurrentRow < mCount/6) {
+				
 				mScroller.abortAnimation();
 				setScrollY(0);
 				int top = (mHeight - mImageHeight) / 2;
@@ -201,10 +227,16 @@ public class CircleImage3DSwitchView extends ViewGroup {
 					mRow = 0;
 					mLeft = mCount;
 				}
-				if (mCount > 24) {
-					startCount = mCount/6 - 3;
+				mCurrentRow = addRowCount;
+				Log.d("CircleImage3DSwitchView", "mCurrentRow = " + mCurrentRow );
+				if (mCount > 18) {
+					
+					startCount = addRowCount-2;
+				}else {
+
+					startCount = 0;
 				}
-				for (int i = (startCount-1)*6; i < mRow; i++) {
+				for (int i = startCount; i < mRow; i++) {
 						for (int j = 0; j < 6; j++) {
 							CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);							
 							circle.layout(mWidth*j , top, mWidth*(j+1), top
@@ -225,8 +257,13 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			//forceToRelayout = false;
 			
 		}
-		if (addRowCount > 0) {
+		if (mCount > 6 && CANSCROLLTONEXT) {
+			CANSCROLLTONEXT = false;
 			scrollToNext();
+		}
+		if (mCount > 12 && CANSCROLLTOPREV) {
+			CANSCROLLTOPREV = false;
+			scrollToPrevious();
 		}
 	}
 	
@@ -438,7 +475,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 * 刷新所有图片的显示状态，包括当前的旋转角度。
 	 */
 	private void refreshImageShowing() {
-		for (int i = (startCount-1)*6; i < mCount; i++) {
+		for (int i = startCount*6; i < mCount; i++) {
 			//CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
 
 			CircleImage3DView circle = (CircleImage3DView) getChildAt(i);
