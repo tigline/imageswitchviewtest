@@ -19,7 +19,7 @@ import android.widget.Button;
  */
 public class CircleActivity extends Activity implements OnClickListener{
 	
-	Button prev_bt, next_bt;
+	Button prev_bt, next_bt, add_bt, dec_bt;
 	private CircleImage3DSwitchView circleImageSwitchView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +33,15 @@ public class CircleActivity extends Activity implements OnClickListener{
         circleImageSwitchView = (CircleImage3DSwitchView) findViewById(R.id.image_switch_view_clone);
  
         //circleImageSwitchView.initLayout();
+        
         prev_bt = (Button) findViewById(R.id.previous);
         next_bt = (Button) findViewById(R.id.next);
+        add_bt = (Button) findViewById(R.id.add);
+        dec_bt = (Button) findViewById(R.id.dec);
         prev_bt.setOnClickListener(this);
         next_bt.setOnClickListener(this);
+        add_bt.setOnClickListener(this);
+        dec_bt.setOnClickListener(this);
         
     }
 
@@ -60,6 +65,14 @@ public class CircleActivity extends Activity implements OnClickListener{
 			break;
 		case R.id.next:
 			circleImageSwitchView.addListView();
+
+			break;
+		case R.id.add:
+			circleImageSwitchView.deleteCircleItem(0);
+
+			break;
+		case R.id.dec:
+			circleImageSwitchView.deleteCircleItem(0);
 
 			break;
 		default:

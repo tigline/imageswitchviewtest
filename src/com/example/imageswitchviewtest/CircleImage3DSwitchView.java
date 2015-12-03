@@ -2,32 +2,21 @@
 package com.example.imageswitchviewtest;
 
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Set;
-
 
 import android.R.integer;
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.Scroller;
-import android.widget.TextView;
 
 
 
@@ -132,7 +121,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		mScroller = new Scroller(context);
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 1; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_item, null);
 			
 			if (i < 6) {
@@ -203,7 +192,15 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 * 2删除某个实例
 	 * 只针对当前行
 	 */
-	
+	public CircleImage3DView getCircleItem(int index) {
+		CircleImage3DView circle = (CircleImage3DView) getChildAt(mCurrentRow * 6 + index);
+		return circle;
+	}
+	public void deleteCircleItem(int index) {
+		CircleImage3DView circle = (CircleImage3DView) getChildAt(mCurrentRow * 6 + index);
+		removeView(circle);
+		circleList.remove(mCurrentRow * 6 + index);
+	}
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		Log.d("CircleImage3DSwitchView", "onLayout()" );
@@ -214,7 +211,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			mHeight = getMeasuredHeight();
 			// 每张图片的高度设定为控件高度的百分之
 			mImageHeight = (int) (mHeight * 0.42);
-			if (mCurrentRow >= 0 && mCurrentRow < mCount/6) {			
+			if (mCurrentRow >= 0 && mCurrentRow <= mCount/6) {			
 				mScroller.abortAnimation();
 				setScrollY(0);
 				int top = (mHeight - mImageHeight) / 2;
@@ -244,7 +241,6 @@ public class CircleImage3DSwitchView extends ViewGroup {
 					startCount = 0;
 				}
 				
-
 				for (int i = startCount; i < mRow; i++) {
 						for (int j = 0; j < 6; j++) {
 							CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);							
@@ -272,7 +268,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			CANSCROLLTONEXT = false;
 			scrollToNext();
 		}
-		if (mCount >= 12 && CANSCROLLTOPREV) {
+		if (mCount >6 && CANSCROLLTOPREV) {
 			CANSCROLLTOPREV = false;
 			scrollToPrevious();
 		}

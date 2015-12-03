@@ -6,5 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="next">NEXT</string>
     <string name="prev">PREV</string>
+    <string name="add">ADD</string>
+    <string name="dec">DEC</string>
 
 </resources>
