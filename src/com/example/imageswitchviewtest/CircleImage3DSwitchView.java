@@ -198,6 +198,12 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		
 	}
 	
+	/**
+	 * 1获取某个实例
+	 * 2删除某个实例
+	 * 只针对当前行
+	 */
+	
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		Log.d("CircleImage3DSwitchView", "onLayout()" );
