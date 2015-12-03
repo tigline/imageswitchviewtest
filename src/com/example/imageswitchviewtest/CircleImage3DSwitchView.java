@@ -105,7 +105,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	private int mLeft;
 	private static int addRowCount = 0;
 	private static int startCount = 0;
-	private static int mCurrentRow = 0;
+	public static int mCurrentRow = 0;
 	/**
 	 * 记录当前显示图片的坐标
 	 */
@@ -182,22 +182,19 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public void decListView() {
 		
 		Log.d("CircleImage3DSwitchView", "decListView() ");
+		
+		if (mCount > 12 && addRowCount > 0) {
 		CANSCROLLTOPREV = true;
-		int cout = mCount;
 		for (int i = mCount-6; i < mCount; i++) {
-//			CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
-//			circle.recycleBitmap();
-//			//circleList.remove(i);
-			this.removeViewAt(0);
+			CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
+			removeView(circle);			
+		}	
+		for (int i = 0; i < 6; i++) {
+			circleList.remove(circleList.size()-1);
 		}
-		for (int i = cout-6; i < cout; i++) {
-			circleList.remove(i);
-		}
+		Log.d("CircleImage3DSwitchView", "circleList.size() = " + circleList.size());
 		addRowCount--;
-//		if (mCount > 12 && addRowCount > 0) {
-//			addRowCount--;
-//			scrollToPrevious();
-//		}
+		}
 		
 	}
 	
@@ -211,41 +208,49 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			mHeight = getMeasuredHeight();
 			// 每张图片的高度设定为控件高度的百分之
 			mImageHeight = (int) (mHeight * 0.42);
-			if (mCurrentRow >= 0 && mCurrentRow < mCount/6) {
-				
+			if (mCurrentRow >= 0 && mCurrentRow < mCount/6) {			
 				mScroller.abortAnimation();
 				setScrollY(0);
 				int top = (mHeight - mImageHeight) / 2;
-				// 通过循环为每张图片设定位置
+				// 通过循环为每张图片设定位置				
 				if (mCount > 6) {
 					mRow = mCount / 6;
 					mLeft = mCount - mRow * 6;
-					if (mCount > 18) {
+					if (mCount > 18 && !CANSCROLLTOPREV) {
 						top = top - mImageHeight;
 					}
+					if (CANSCROLLTOPREV) {					
+						if (mCount < 18) {
+							top = top - mImageHeight;
+						}else{
+							top = top - 2*mImageHeight;
+						}
+					}					
 				}else {
 					mRow = 0;
 					mLeft = mCount;
 				}
+				
 				mCurrentRow = addRowCount;
-				Log.d("CircleImage3DSwitchView", "mCurrentRow = " + mCurrentRow );
-				if (mCount > 18) {
-					
-					startCount = addRowCount-2;
+				if (mCount > 18) {					
+					startCount = mCurrentRow-2;
 				}else {
-
 					startCount = 0;
 				}
+				
+
 				for (int i = startCount; i < mRow; i++) {
 						for (int j = 0; j < 6; j++) {
 							CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);							
 							circle.layout(mWidth*j , top, mWidth*(j+1), top
 									+ mImageHeight );
 							circle.initImageViewBitmap();
+							
 							refreshImageShowing();							
 						}
 					top = top + mImageHeight;			
 				}
+				
 				for (int i = 0; i < mLeft; i++) {										
 					CircleImage3DView circle = (CircleImage3DView) getChildAt(i+mRow*6);
 					circle.layout(mWidth*i , top , mWidth*(i+1), top
@@ -261,13 +266,15 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			CANSCROLLTONEXT = false;
 			scrollToNext();
 		}
-		if (mCount > 12 && CANSCROLLTOPREV) {
+		if (mCount >= 12 && CANSCROLLTOPREV) {
 			CANSCROLLTOPREV = false;
 			scrollToPrevious();
 		}
 	}
 	
-	
+	public int getIndex() {
+		return mCurrentRow;
+	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
