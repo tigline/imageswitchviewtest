@@ -12,8 +12,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.Paint.FontMetrics;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -56,7 +58,8 @@ public class CircleImage3DView extends ImageView {
     private Matrix mShaderMatrix;
     private final Paint mBitmapPaint = new Paint();
     private final Paint mBorderPaint = new Paint();
-
+    private final Paint mTextPaint = new Paint();
+    private FontMetrics fm;
     private int mBorderColor = DEFAULT_BORDER_COLOR;
     private int mBorderWidth = DEFAULT_BORDER_WIDTH;
 
@@ -123,6 +126,9 @@ public class CircleImage3DView extends ImageView {
 	
 	private float scaleY;
 	
+	private String itemText;
+	
+	private int textCenterX;
 	
 	
 	public CircleImage3DView(Context context) {
@@ -158,6 +164,7 @@ public class CircleImage3DView extends ImageView {
         }
 	}
 
+	
 
 	@Override
     public ScaleType getScaleType() {
@@ -239,7 +246,11 @@ public class CircleImage3DView extends ImageView {
 	        mBitmap = getBitmapFromDrawable(getDrawable());
 	        setup();
 	    }
-	   
+	    
+	    public void setCircleItemText(String text) {
+			itemText = text;
+		}
+	    
 	    private Bitmap getBitmapFromDrawable(Drawable drawable) {
 	        if (drawable == null) {
 	            return null;
@@ -267,7 +278,7 @@ public class CircleImage3DView extends ImageView {
 	            return null;
 	        }
 	    }
-
+	    
 	@Override
 	protected void onDraw(Canvas canvas) {
 		
@@ -294,12 +305,24 @@ public class CircleImage3DView extends ImageView {
 			mShaderMatrix.postTranslate(getHeight() / 2, mDy);
 			canvas.concat(mShaderMatrix);   			
         	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
-            canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint);     
+            canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint); 
+            canvas.drawText(itemText, textCenterX, getHeight() - fm.bottom, mTextPaint);
         }
 
 	}
 
-
+	public static int getTextWidth(Paint paint, String str) {  
+        int iRet = 0;  
+        if (str != null && str.length() > 0) {  
+            int len = str.length();  
+            float[] widths = new float[len];  
+            paint.getTextWidths(str, widths);  
+            for (int j = 0; j < len; j++) {  
+                iRet += (int) Math.ceil(widths[j]);  
+            }  
+        }  
+        return iRet;  
+    }
 
 	@Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -535,7 +558,20 @@ public class CircleImage3DView extends ImageView {
 
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
         mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
-
+        
+        mTextPaint.setTextSize(36);
+        mTextPaint.setColor(Color.WHITE);
+        
+        fm = mTextPaint.getFontMetrics();
+        int textLenth = getTextWidth(mTextPaint, itemText);
+        if (textLenth > getWidth()) {
+        	textCenterX = getWidth()/10;
+        	mTextPaint.setTextAlign(Align.LEFT);
+		}else{
+			textCenterX = getWidth()/2;
+        	mTextPaint.setTextAlign(Align.CENTER);
+		}
+        
         updateShaderMatrix(); 
         invalidate();  //刷新数据调用onDraw()重绘 
     }
