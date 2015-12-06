@@ -1,6 +1,8 @@
 
 package com.example.imageswitchviewtest;
 
+import java.util.Random;
+
 import android.R.integer;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -29,6 +31,10 @@ import android.widget.TextView;
     此view 为 circleImageView 与 Image3DView 结合 
  */
 public class CircleImage3DView extends ImageView {
+	
+	public static final int IMAGE_PADDING = 10;
+	
+	private static final String TAG = "CircleImage3DView";
 	/**
 	 * 旋转角度的基准值
 	 */
@@ -78,6 +84,8 @@ public class CircleImage3DView extends ImageView {
 
     private boolean mReady;
     private boolean mSetupPending;
+    
+    private float scale = 1f;
     
     private boolean drawFlag = true;
 	/**
@@ -203,7 +211,7 @@ public class CircleImage3DView extends ImageView {
 		mIndex = index;
 		rowIndex = index%6;
 		//yOffset = location;
-
+		//computeMidOffsetData();
 
 //		yOffset = dy;
 //		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
@@ -356,28 +364,40 @@ public class CircleImage3DView extends ImageView {
 	 * 0.7f 0.8f 1.1f 1.4f 1.2f 0.8f
 	 */
 	private void computeMidOffsetData() {
-		
+		Random r = new Random();
 		int index = mIndex % 6;
+		
+		int num = 1;
 		switch (index) {
 		case 0:	
-			scaleX = 0.7f;
-			
+			//scaleX = 0.7f;
+			num =  r.nextInt(6);
+			Log.d(TAG, "scale 0 = " + num);
 			break;
 		case 1:
-			scaleX = 0.8f;
-			
+			//scaleX = 0.8f;
+			num =  r.nextInt(6);
+			Log.d(TAG, "scale 1 = " + num);
 			break;
 		case 2:
-			scaleX = 1.1f;
+			//scaleX = 1.1f;
+			num =  r.nextInt(6);
+			Log.d(TAG, "scale 2 = " + num);
 			break;
 		case 3:	
-			scaleX = 1.4f;
+			//scaleX = 1.4f;
+			num =  r.nextInt(6);
+			Log.d(TAG, "scale 3 = " + num);
 			break;
 		case 4:	
-			scaleX = 1.2f;
+			//scaleX = 1.2f;
+			num =  r.nextInt(6);
+			Log.d(TAG, "scale 4 = " + num);
 			break;
 		case 5:		
-			scaleX = 0.8f;
+			//scaleX = 0.8f;
+			num =  r.nextInt(6);
+			Log.d(TAG, "scale 5 = " + num);
 			break;
 		default:
 			break;
@@ -412,8 +432,10 @@ public class CircleImage3DView extends ImageView {
 		default:
 			break;
 		}	
+		//scaleX = sacle[i] - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
+		//xOffset = 
 		setTranslationX(xOffset);
-
+		
 	}
 	/**
 	 * 在这里计算所有旋转所需要的数据。
@@ -443,13 +465,13 @@ public class CircleImage3DView extends ImageView {
 			}
 			//computeMidOffsetData();
 		}else if (yOffset >= (mLayoutHeight - mItemHeight) / 2 && yOffset <= (mLayoutHeight + mItemHeight) / 2 ) {
-			scaleX = 1f - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
+			scaleX = scale - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
 			if (yOffset == (mLayoutHeight - mItemHeight) / 2) {
 				
 			}
 			//computeMidOffsetData();
 			mRotateDegree = 0;
-			xOffset = 0;
+			//xOffset = 0;
 			mDeep = 0;
 			computeBottomOffsetData();
 			
@@ -527,10 +549,10 @@ public class CircleImage3DView extends ImageView {
         mBorderPaint.setColor(mBorderColor);
         mBorderPaint.setStrokeWidth(mBorderWidth); //设置空心线宽
  
-        mBitmapHeight = mBitmap.getHeight();
-        mBitmapWidth = mBitmap.getWidth();  
+        mBitmapHeight = mBitmap.getHeight() - IMAGE_PADDING;
+        mBitmapWidth = mBitmap.getWidth() - IMAGE_PADDING;  
 
-        mBorderRect.set(0, 0, getWidth(), getHeight());
+        mBorderRect.set(0, 0, getWidth() - IMAGE_PADDING, getHeight() - IMAGE_PADDING);
         mBorderRadius = Math.min((mBorderRect.height() - mBorderWidth) / 2, (mBorderRect.width() - mBorderWidth) / 2);
 
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
@@ -565,6 +587,11 @@ public class CircleImage3DView extends ImageView {
         
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
+
+	public void setItemScale(float itemScale) {
+		// TODO Auto-generated method stub
+		scale = itemScale;
+	}
 
 
 
