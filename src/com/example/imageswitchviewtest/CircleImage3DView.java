@@ -34,6 +34,7 @@ public class CircleImage3DView extends ImageView {
 	/**
 	 * 旋转角度的基准值
 	 */
+	public static final int IMAGE_PADDING = 10;
 	private static final float BASE_DEGREE = 50f;
 	/**
 	 * 旋转深度的基准值
@@ -130,7 +131,9 @@ public class CircleImage3DView extends ImageView {
 	
 	private int textCenterX;
 	
+	private float scale = 1f;
 	
+	private float itemsScale [] = new float [6];
 	public CircleImage3DView(Context context) {
         super(context);
         //setWillNotDraw(false);
@@ -205,10 +208,11 @@ public class CircleImage3DView extends ImageView {
 	 * @param scrollX
 	 *            当前图片在X轴方向滚动的距离
 	 */
-	public void setRotateData(int index, int scrollY) {
-
+	public void setRotateData(int index, float[] scales) {
+		
 		mIndex = index;
 		rowIndex = index%6;
+		itemsScale = scales;
 		//yOffset = location;
 
 
@@ -410,26 +414,38 @@ public class CircleImage3DView extends ImageView {
 	
 	private void computeBottomOffsetData() {
 		// TODO Auto-generated method stub
-		float setPerPix = 100f / ((mLayoutHeight - mHeight) / 2);
+		float setPerPix = 100f / mItemHeight ;
+		float L = getWidth();
+		float extendOffset = 0f;
+		float offsetPerPix = 0f;
 		//Log.d("CircleImage3DView", "mIndex = " + mIndex );
 		int index = mIndex % 6;
 		switch (index) {
 		case 0:
-			xOffset = -((mLayoutHeight - mItemHeight) / 2 - yOffset) * setPerPix;
+			extendOffset = (scale - 1)*L - L/2 + scale*L/2;
+			offsetPerPix = extendOffset / mItemHeight;
+			xOffset = -((mLayoutHeight - mItemHeight) / 2 - yOffset) * setPerPix - (((mLayoutHeight + mItemHeight) / 2) - yOffset ) * offsetPerPix;
 			break;
 		case 1:
-			xOffset = -(((mLayoutHeight - mItemHeight) / 2 - yOffset)*3/5) * setPerPix;
+			extendOffset = (itemsScale[0] + scale - 2) * L - L/2 + scale*L/2;
+			offsetPerPix = extendOffset / mItemHeight;
+			xOffset = -(((mLayoutHeight - mItemHeight) / 2 - yOffset)*3/5) * setPerPix - (((mLayoutHeight + mItemHeight) / 2) - yOffset) * offsetPerPix;
 			break;
 		case 2:
-			xOffset = -(((mLayoutHeight - mItemHeight) / 2 - yOffset)/5) * setPerPix;
+			extendOffset = (itemsScale[0] + itemsScale[1] + scale - 3)*L - L/2 + scale*L/2;
+			offsetPerPix = extendOffset / mItemHeight;
+			xOffset = -(((mLayoutHeight - mItemHeight) / 2 - yOffset)/5) * setPerPix - (((mLayoutHeight + mItemHeight) / 2) - yOffset) * offsetPerPix;
 			break;
 		case 3:
+			extendOffset = (itemsScale[0] + itemsScale[1] + itemsScale[2] + scale - 4)*L - L/2 + scale*L/2;
 			xOffset = (((mLayoutHeight - mItemHeight) / 2 - yOffset)/5) * setPerPix;
 			break;
 		case 4:
+			extendOffset = (itemsScale[0] + itemsScale[1] + itemsScale[2] + itemsScale[3] + scale - 5)*L - L/2 + scale*L/2;
 			xOffset = (((mLayoutHeight - mItemHeight) / 2 - yOffset)*3/5) * setPerPix;
 			break;
 		case 5:
+			extendOffset = (itemsScale[0] + itemsScale[1] + itemsScale[2] + itemsScale[3] + itemsScale[4] +scale - 6)*L - L/2 + scale*L/2;
 			xOffset = ((mLayoutHeight - mItemHeight) / 2 - yOffset) * setPerPix;
 			break;
 		default:
@@ -447,32 +463,24 @@ public class CircleImage3DView extends ImageView {
 		float scalePerPix = BASE_SCALE / mItemHeight;
 
 		
-		if (yOffset <= (mLayoutHeight - mItemHeight) / 2) {
-
+		if (yOffset < (mLayoutHeight - mItemHeight) / 2) {
 			mDy = mHeight;
 			mRotateDegree = 360f - ((mLayoutHeight - mItemHeight) / 2 - yOffset) * degreePerPix;
 			mDeep = 0;
 			scaleX = 1f;
-			if (yOffset < (mLayoutHeight - mItemHeight) / 2-10) {
-				
-			}
 			if (yOffset < (mLayoutHeight - mItemHeight) / 2-mItemHeight) {
 				
 				mDeep = ((mLayoutHeight - mItemHeight) / 2 - yOffset) * deepPerPix;
 			}
 				computeTopOffsetData();
-			if (yOffset == (mLayoutHeight - mItemHeight) / 2) {
-				
-			}
+
 			//computeMidOffsetData();
-		}else if (yOffset >= (mLayoutHeight - mItemHeight) / 2 && yOffset <= (mLayoutHeight + mItemHeight) / 2 ) {
-			scaleX = 1f - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
-			if (yOffset == (mLayoutHeight - mItemHeight) / 2) {
-				
-			}
+		}else if (yOffset > (mLayoutHeight - mItemHeight) / 2 && yOffset <= (mLayoutHeight + mItemHeight) / 2 ) {
+			scaleX = scale - (yOffset - (mLayoutHeight - mItemHeight) / 2) *scalePerPix;
+
 			//computeMidOffsetData();
 			mRotateDegree = 0;
-			xOffset = 0;
+//			xOffset = 0;
 			mDeep = 0;
 			computeBottomOffsetData();
 			
@@ -550,10 +558,10 @@ public class CircleImage3DView extends ImageView {
         mBorderPaint.setColor(mBorderColor);
         mBorderPaint.setStrokeWidth(mBorderWidth); //设置空心线宽
  
-        mBitmapHeight = mBitmap.getHeight();
-        mBitmapWidth = mBitmap.getWidth();  
+        mBitmapHeight = mBitmap.getHeight() - IMAGE_PADDING;
+        mBitmapWidth = mBitmap.getWidth() - IMAGE_PADDING;  
 
-        mBorderRect.set(0, 0, getWidth(), getHeight());
+        mBorderRect.set(0, 0, getWidth() - IMAGE_PADDING, getHeight() - IMAGE_PADDING);
         mBorderRadius = Math.min((mBorderRect.height() - mBorderWidth) / 2, (mBorderRect.width() - mBorderWidth) / 2);
 
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
@@ -602,6 +610,10 @@ public class CircleImage3DView extends ImageView {
         mBitmapShader.setLocalMatrix(mShaderMatrix);
     }
 
+    public void setItemScale(float itemScale) {
+		// TODO Auto-generated method stub
+		scale = itemScale;
+	}
 
 
 }

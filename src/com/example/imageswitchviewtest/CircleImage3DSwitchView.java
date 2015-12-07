@@ -3,9 +3,6 @@ package com.example.imageswitchviewtest;
 
 
 import java.util.ArrayList;
-
-
-
 import android.R.integer;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -41,9 +38,11 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public static final int IMAGE_PADDING = 10;
 	private static final int TOUCH_STATE_REST = 0;
 	private static final int TOUCH_STATE_SCROLLING = 1;
+	private static final int LIST_COUNT_PER_PAGE = 6;
 	private boolean CANSCROLLTONEXT = false;
 	private boolean CANSCROLLTOPREV = false;
 	private boolean isDelete = false;
+	private final float [] scale = {0.7f, 0.8f, 1.2f, 1.4f, 1.1f, 0.8f};
 	/**
 	 * 滚动到下一张图片的速度
 	 */
@@ -61,6 +60,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 */
 	private static final int SCROLL_BACK = 2;
 	private static Handler handler = new Handler();
+	private boolean isInit = false;
 	/**
 	 * 控件宽度
 	 */
@@ -125,7 +125,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		mScroller = new Scroller(context);
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
+		isInit = true;
 		for (int i = 0; i < 12; i++) {
+			
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_item, null);
 			String tag = i + ".";
 			circle.setCircleItemText(tag + "videovideovideovideo");
@@ -310,26 +312,39 @@ public class CircleImage3DSwitchView extends ViewGroup {
 					startCount = 0;
 				}
 				
+				int[] scaleIndex = new int[6];
 				for (int i = startCount; i < mRow; i++) {
-						for (int j = 0; j < 6; j++) {
-							//CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);	
-							CircleImage3DView circle = (CircleImage3DView) circleList.get(j+i*6);
-							circle.layout(mWidth*j , top, mWidth*(j+1), top
-									+ mImageHeight );
-							circle.initImageViewBitmap();
-							
-							refreshImageShowing();							
-						}
+					scaleIndex = setScaleItems();
+					int left = 0;
+					int right = 0;
+					for (int j = 0; j < LIST_COUNT_PER_PAGE; j++) {
+						right = (int)(left + scale[scaleIndex[j]] * mWidth);
+						//CircleImage3DView circle = (CircleImage3DView) getChildAt(j+i*6);
+						CircleImage3DView circle = (CircleImage3DView) circleList.get(j+i*6);
+						circle.layout(mWidth*j , top, mWidth*(j+1), top
+								+ mImageHeight );
+//						circle.layout(left , top, right, top
+//						+ mImageHeight );
+						circle.setItemScale(scale[scaleIndex[j]]);
+						circle.initImageViewBitmap();
+						left += scale[scaleIndex[j]] * mWidth;
+						refreshImageShowing(scale);							
+					}
 					top = top + mImageHeight;			
 				}
-				
+				int left = 0;
+				int right = 0;
+				int[] scaleIndexL = setScaleItems();
 				for (int i = 0; i < mLeft; i++) {										
 					//CircleImage3DView circle = (CircleImage3DView) getChildAt(i+mRow*6);
+					right = (int)(left + scale[scaleIndexL[i]] * mWidth);
 					CircleImage3DView circle = (CircleImage3DView) circleList.get(i+mRow*6);
-					circle.layout(mWidth*i , top , mWidth*(i+1), top
+					circle.layout(mWidth*i , top, mWidth*(i+1), top
 							+ mImageHeight );
+					circle.setItemScale(scale[scaleIndex[i]]);
 					circle.initImageViewBitmap();
-					refreshImageShowing();
+					left += scale[scaleIndexL[i]] * mWidth;
+					refreshImageShowing(scale);
 				}				
 			}
 			
@@ -337,8 +352,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			
 		}
 		
-		if (isDelete) {
+		if (isDelete || isInit) {
 			isDelete = false;
+			isInit = false;
 			setItemsAlign();
 		}
 		if (mCount > 6 && CANSCROLLTONEXT) {
@@ -356,6 +372,21 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		return mCurrentRow;
 	}
 	
+	private int [] setScaleItems() {
+		
+		int[] startArray = {0, 1, 2, 3, 4, 5};
+		int N = 6;
+		int[] resultArray = new int [6];
+		for (int i = 0; i < N; i++) {
+			int seed = (int)(Math.random()*(startArray.length - i - 0));
+			resultArray[i] = startArray[seed];
+			startArray[seed] = startArray[startArray.length - i - 1];
+		}
+		
+		return resultArray;
+		
+	}
+	
 	private void setItemsAlign() {
 		
 		int disY = -10 ;
@@ -363,12 +394,12 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		if (mScroller.isFinished()) {
 			mScroller.startScroll(0, getScrollY(), 0, disY, duration);
 			invalidate();
-			refreshImageShowing();
+			refreshImageShowing(scale);
 		}
 		if (mScroller.isFinished()) {
 			mScroller.startScroll(0, getScrollY(), 0, disY, duration);
 			invalidate();
-			refreshImageShowing();
+			refreshImageShowing(scale);
 		}
 	
 	}
@@ -393,7 +424,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				mLastMotionY = y;
 				scrollBy(0, disY);  //Y轴移动
 				// 当发生移动时刷新图片的显示状态
-				refreshImageShowing();
+				refreshImageShowing(scale);
 				break;
 			case MotionEvent.ACTION_UP:
 //				Log.d("MoveUp", "ACTION_UP");
@@ -460,7 +491,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public void computeScroll() {
 		if (mScroller.computeScrollOffset()) {
 			scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
-			refreshImageShowing();
+			refreshImageShowing(scale);
 			postInvalidate();  //非UI线程中刷新view
 		}
 	}
@@ -497,7 +528,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				mListener.onImageSwitch(mCurrentImage);
 			}
 			beginScroll(0, getScrollY(), 0, disY,SCROLL_NEXT);
-			refreshImageShowing();
+			refreshImageShowing(scale);
 		}
 	}
 
@@ -512,7 +543,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				mListener.onImageSwitch(mCurrentImage);
 			}
 			beginScroll(0, getScrollY(), 0, disY, SCROLL_PREVIOUS);
-			refreshImageShowing();
+			refreshImageShowing(scale);
 		}
 	}
 
@@ -577,14 +608,15 @@ public class CircleImage3DSwitchView extends ViewGroup {
 
 	/**
 	 * 刷新所有图片的显示状态，包括当前的旋转角度。
+	 * @param scale 
 	 */
-	private void refreshImageShowing() {
+	private void refreshImageShowing(float[] scale) {
 		for (int i = startCount*6; i < mCount; i++) {
 			//CircleImage3DView childView = (CircleImage3DView) getChildAt(mItems[i]);
 
 			CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
 
-			circle.setRotateData(i, getScrollY());
+			circle.setRotateData(i, scale);
 			
 			circle.invalidate();  //UI线程中刷新view	
 
