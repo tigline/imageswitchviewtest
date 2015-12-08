@@ -126,7 +126,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
 		isInit = true;
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 6; i++) {
 			
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_item, null);
 			String tag = i + ".";
@@ -325,7 +325,8 @@ public class CircleImage3DSwitchView extends ViewGroup {
 								+ mImageHeight );
 //						circle.layout(left , top, right, top
 //						+ mImageHeight );
-						circle.setItemScale(scale[scaleIndex[j]]);
+						//circle.setItemScale(scale[scaleIndex[j]]);
+						circle.setItemScale(scale[j]);
 						circle.initImageViewBitmap();
 						left += scale[scaleIndex[j]] * mWidth;
 						refreshImageShowing(scale);							
@@ -341,7 +342,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 					CircleImage3DView circle = (CircleImage3DView) circleList.get(i+mRow*6);
 					circle.layout(mWidth*i , top, mWidth*(i+1), top
 							+ mImageHeight );
-					circle.setItemScale(scale[scaleIndex[i]]);
+					circle.setItemScale(scale[i]);
 					circle.initImageViewBitmap();
 					left += scale[scaleIndexL[i]] * mWidth;
 					refreshImageShowing(scale);

@@ -68,7 +68,7 @@ public class CircleActivity extends Activity implements OnClickListener{
 
 			break;
 		case R.id.add:
-			circleImageSwitchView.deleteCircleItem(0);
+			circleImageSwitchView.deleteCircleItem(5);
 
 			break;
 		case R.id.dec:
