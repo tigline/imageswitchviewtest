@@ -1,7 +1,6 @@
 
 package com.example.imageswitchviewtest;
 
-import android.R.integer;
 import android.content.Context;
 import android.content.res.TypedArray;
 
@@ -19,12 +18,8 @@ import android.graphics.Paint.FontMetrics;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
-import android.widget.TextView;
 
 /**
  * 
@@ -83,17 +78,11 @@ public class CircleImage3DView extends ImageView {
     private boolean mReady;
     private boolean mSetupPending;
     
-    private boolean drawFlag = true;
-	/**
+    /**
 	 * 当前图片对应的下标
 	 */
 	private int mIndex;
 	
-	private int rowIndex;
-	/**
-	 * 在前图片在X轴方向滚动的距离
-	 */
-	private int mScrollY;
 	/**
 	 * CircleImage3DSwitchView控件的宽度
 	 */
@@ -110,11 +99,6 @@ public class CircleImage3DView extends ImageView {
 	 * 旋转的中心点
 	 */
 	private float mDy;
-	/**
-	 * 旋转的深度
-	 */
-	private TextView currentText;
-	
 	private float mItemHeight;
 	
 	private float mDeep;
@@ -125,13 +109,17 @@ public class CircleImage3DView extends ImageView {
 	
 	private float scaleX;
 	
-	private float scaleY;
-	
 	private String itemText;
+	
+	private String itemTextUpp;
+	
+	private String itemTextDown;
 	
 	private int textCenterX;
 	
 	private float scale = 1f;
+	
+	private boolean drawSecondLine = false;
 	
 	private static float itemsScale [] = new float [6];
 	public CircleImage3DView(Context context) {
@@ -211,7 +199,6 @@ public class CircleImage3DView extends ImageView {
 	public void setRotateData(int index, float[] scales) {
 		
 		mIndex = index;
-		rowIndex = index%6;
 		itemsScale = scales;
 		//yOffset = location;
 
@@ -310,7 +297,11 @@ public class CircleImage3DView extends ImageView {
 			canvas.concat(mShaderMatrix);   			
         	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
             canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint); 
-            canvas.drawText(itemText, textCenterX, getHeight() - fm.bottom, mTextPaint);
+            canvas.drawText(itemTextUpp, textCenterX, getHeight() - fm.bottom, mTextPaint);
+            if (drawSecondLine) {
+            	canvas.drawText(itemTextUpp, textCenterX, getHeight() - 5*fm.bottom, mTextPaint);
+			}
+            
         }
 
 	}
@@ -396,7 +387,7 @@ public class CircleImage3DView extends ImageView {
 	
 	private void computeBottomOffsetData() {
 		// TODO Auto-generated method stub
-		float setPerPix = 100f / mItemHeight / 2 ;
+		float setPerPix = 100f / mItemHeight ;
 		float L = getWidth();
 		float extendOffset = 0f;
 		float offsetPerPix = 0f;
@@ -549,19 +540,33 @@ public class CircleImage3DView extends ImageView {
         mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
         mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
         
-        mTextPaint.setTextSize(36);
+        mTextPaint.setTextSize(30);
         mTextPaint.setColor(Color.WHITE);
         
         fm = mTextPaint.getFontMetrics();
+        
         int textLenth = getTextWidth(mTextPaint, itemText);
+        
         if (textLenth > getWidth()) {
-        	textCenterX = getWidth()/10;
-        	mTextPaint.setTextAlign(Align.LEFT);
+        	drawSecondLine = true;
+        	if (textLenth > getWidth() * 2) {
+        		char bufU[] = new char [10];
+        		char bufD[] = new char [8];
+            	String end = "...";
+            	
+            	itemText.getChars(0, 9, bufU, 0);
+            	itemTextUpp = String.valueOf(bufU);
+//            	itemText.getChars(11, 8, bufD, 0);
+//            	itemTextDown = String.valueOf(bufD) + end;          	
+			} else {
+				
+			}
 		}else{
-			textCenterX = getWidth()/2;
-        	mTextPaint.setTextAlign(Align.CENTER);
+			
 		}
         
+        textCenterX = getWidth()/2;
+    	mTextPaint.setTextAlign(Align.CENTER);
         updateShaderMatrix(); 
         invalidate();  //刷新数据调用onDraw()重绘 
     }

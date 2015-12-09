@@ -3,6 +3,10 @@ package com.example.imageswitchviewtest;
 
 
 import java.util.ArrayList;
+import java.util.List;
+
+
+
 import android.R.integer;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -42,7 +46,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	private boolean CANSCROLLTONEXT = false;
 	private boolean CANSCROLLTOPREV = false;
 	private boolean isDelete = false;
+	private boolean isFromService = false;
 	private final float [] scale = {0.7f, 0.8f, 1.2f, 1.4f, 1.1f, 0.8f};
+	
 	/**
 	 * 滚动到下一张图片的速度
 	 */
@@ -83,6 +89,12 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 * 记录控件高度
 	 */
 	public ArrayList<View> circleList = new ArrayList<View>();
+	
+	class VideoInfo {
+		int num;
+	}
+	
+	public List<VideoInfo> videoList = new ArrayList<VideoInfo>();
 	public static int mHeight;
 	
 	/**
@@ -126,11 +138,11 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		//viewGroup = (ViewGroup) LayoutInflater.from(context).inflate(R.id.image_switch_view_clone, null);
 		//circleList = new ArrayList<CircleImage3DView>();
 		isInit = true;
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 12; i++) {
 			
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(context).inflate(R.layout.circle_item, null);
-			String tag = i + ".";
-			circle.setCircleItemText(tag + "videovideovideovideo");
+
+			circle.setCircleItemText("万万没想到之大话西游篇王大锤叫兽易小星刘循子墨赵丽颖陈柏霖");
 			if (i < 6) {
 				circle.setImageResource(R.drawable.row1);
 			}else if (i >=6 && i < 12) {
@@ -142,6 +154,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			}else {
 				circle.setImageResource(R.drawable.row5);
 			}
+			VideoInfo info = new VideoInfo();
+			info.num = i;
+			videoList.add(info);
 			circleList.add(circle);
 			addView(circle);
 			
@@ -152,14 +167,14 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	@SuppressLint("InflateParams") 
 	public void addListView() {
 		
-		addRowCount++;
+		isFromService = true;
 		CANSCROLLTONEXT = true;
 		forceToRelayout = true;
 		Log.d("CircleImage3DSwitchView", "addListView() addRowCount = " + addRowCount );
 		for (int i = 0; i < 6; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);
 			String tag = i + ".";
-			circle.setCircleItemText(tag + "videovideovideovideo");
+			circle.setCircleItemText(tag + "万万没想到之大话西游篇万万没想到之大话西游篇万万没想到之大话西游篇");
 
 			if (i < 6) {
 				circle.setImageResource(R.drawable.row1);
@@ -174,12 +189,18 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			else {
 				circle.setImageResource(R.drawable.row5);
 			}
+			VideoInfo info = new VideoInfo();
+			info.num = videoList.size() + i;
+			videoList.add(info);
 			circleList.add(circle);
 			addView(circle);
+			
 		}
+		addRowCount++;
+		mCurrentRow = addRowCount;
 	}
 	public void decListView() {
-		
+		isFromService = true;
 		Log.d("CircleImage3DSwitchView", "decListView() ");
 		
 		if (mCount > 12 && addRowCount > 0) {
@@ -190,9 +211,11 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		}	
 		for (int i = 0; i < 6; i++) {
 			circleList.remove(circleList.size()-1);
+			videoList.remove(circleList.size()-1);
 		}
 		Log.d("CircleImage3DSwitchView", "circleList.size() = " + circleList.size());
 		addRowCount--;
+		mCurrentRow = addRowCount;
 		}
 		
 	}
@@ -237,9 +260,11 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			}
 			forceToRelayout = true;
 			isDelete = true;
-			CircleImage3DView circle = (CircleImage3DView) getChildAt(mCurrentRow * 6 + index);			
-			removeView(circle);
+			CircleImage3DView circle = (CircleImage3DView) getChildAt(mCurrentRow * 6 + index);		
 			circleList.remove(mCurrentRow * 6 + index);
+			videoList.remove(mCurrentRow * 6 + index);
+			removeView(circle);
+			
 		}else {
 			return;
 		}				
@@ -304,10 +329,11 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				}
 				
 				
-				mCurrentRow = addRowCount;
+				//mCurrentRow = addRowCount;
+				Log.d("CircleImage3DSwitchView", "addRowCount = " + addRowCount );
 				Log.d("CircleImage3DSwitchView", "mCurrentRow = " + mCurrentRow );
 				if (mCount > 18) {					
-					startCount = mCurrentRow-2;
+					startCount = addRowCount-2;
 				}else {
 					startCount = 0;
 				}
@@ -530,6 +556,13 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			}
 			beginScroll(0, getScrollY(), 0, disY,SCROLL_NEXT);
 			refreshImageShowing(scale);
+			if (isFromService) {
+				isFromService = false;
+			}else {
+				mCurrentRow ++;
+				addRowCount = mCurrentRow;
+			}
+			
 		}
 	}
 
@@ -546,6 +579,16 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			beginScroll(0, getScrollY(), 0, disY, SCROLL_PREVIOUS);
 			refreshImageShowing(scale);
 		}
+		if (isFromService) {
+			isFromService = false;
+		}else {
+			mCurrentRow --;
+			addRowCount = mCurrentRow;
+		}
+//		if (mCurrentRow > 0) {
+//			mCurrentRow --;
+//		}			
+//		addRowCount = mCurrentRow;
 	}
 
 	/**
@@ -573,7 +616,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 */
 	private void beginScroll(int startX, int startY, int dx, int dy,
 			final int action) {
-		int duration = (int) (500f / mImageHeight * Math.abs(dy));
+		int duration = (int) (800f / mImageHeight * Math.abs(dy));
 		mScroller.startScroll(startX, startY, dx, dy, duration);
 		invalidate();
 		handler.postDelayed(new Runnable() {

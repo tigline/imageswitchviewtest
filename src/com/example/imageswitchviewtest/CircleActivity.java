@@ -6,6 +6,7 @@ package com.example.imageswitchviewtest;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -68,8 +69,10 @@ public class CircleActivity extends Activity implements OnClickListener{
 
 			break;
 		case R.id.add:
-			circleImageSwitchView.deleteCircleItem(5);
-
+			//circleImageSwitchView.deleteCircleItem(5);
+			for (int i = 0; i < circleImageSwitchView.videoList.size(); i++) {
+				Log.d("CircleActivity", "videoList.num = " + circleImageSwitchView.videoList.get(i).num);
+			}
 			break;
 		case R.id.dec:
 			circleImageSwitchView.deleteCircleItem(0);
