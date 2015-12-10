@@ -170,11 +170,13 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		isFromService = true;
 		CANSCROLLTONEXT = true;
 		forceToRelayout = true;
+		addRowCount++;
+		mCurrentRow = addRowCount;
 		Log.d("CircleImage3DSwitchView", "addListView() addRowCount = " + addRowCount );
 		for (int i = 0; i < 6; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);
-			String tag = i + ".";
-			circle.setCircleItemText(tag + "万万没想到之大话西游篇万万没想到之大话西游篇万万没想到之大话西游篇");
+
+			circle.setCircleItemText("万万没想到");
 
 			if (i < 6) {
 				circle.setImageResource(R.drawable.row1);
@@ -196,27 +198,41 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			addView(circle);
 			
 		}
-		addRowCount++;
-		mCurrentRow = addRowCount;
+		
+		//mCurrentRow = addRowCount;
 	}
 	public void decListView() {
 		isFromService = true;
+		forceToRelayout = true;
+		int delete = 0;
 		Log.d("CircleImage3DSwitchView", "decListView() ");
-		
 		if (mCount > 12 && addRowCount > 0) {
-		CANSCROLLTOPREV = true;
-		for (int i = mCount-6; i < mCount; i++) {
-			CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
-			removeView(circle);			
-		}	
-		for (int i = 0; i < 6; i++) {
-			circleList.remove(circleList.size()-1);
-			videoList.remove(circleList.size()-1);
+			
+			if (mCount % 6 == 0) {
+				delete = 6;
+			}else {
+				delete = mCount % 6;
+			}
+			CANSCROLLTOPREV = true;
+			for (int i = mCount-delete; i < mCount; i++) {
+				CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
+				removeView(circle);			
+			}
+			
+			
+			Log.d("CircleImage3DSwitchView", "delete = " + delete);
+			for (int i = 0; i < delete; i++) {
+				circleList.remove(circleList.size()-1);
+				videoList.remove(circleList.size()-1);
+			}
+			addRowCount--;
+			mCurrentRow = addRowCount;
+			Log.d("CircleImage3DSwitchView", "circleList.size() = " + circleList.size());
+			
+			//mCurrentRow = addRowCount;
 		}
-		Log.d("CircleImage3DSwitchView", "circleList.size() = " + circleList.size());
-		addRowCount--;
-		mCurrentRow = addRowCount;
-		}
+		Log.d("CircleImage3DSwitchView", "startCount = " + startCount );
+		Log.d("CircleImage3DSwitchView", "mCurrentRow = " + mCurrentRow );
 		
 	}
 	
@@ -249,8 +265,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	public void deleteCircleItem(int index) {
 		if (circleList.size() > 0) {
 			deleteCount++;
+			int CurVideoCount = getCurrentPageVideoCount();
 			Log.d("CircleImage3DSwitchView", "deleteCount = " + deleteCount );
-			if (deleteCount > 6) {
+			if (deleteCount > CurVideoCount) {
 				deleteCount = 0;
 				if (mCurrentRow > 0) {
 					mCurrentRow--;
@@ -269,6 +286,19 @@ public class CircleImage3DSwitchView extends ViewGroup {
 			return;
 		}				
 	}
+	
+	public int getCurrentPageVideoCount() {
+		if (getChildCount() > 0) {
+			if ((mCurrentRow+1)*LIST_COUNT_PER_PAGE < getChildCount()) {
+				return LIST_COUNT_PER_PAGE;
+			}else{
+				return getChildCount() - mCurrentRow * LIST_COUNT_PER_PAGE;
+			}
+		}else {
+			return 0;
+		}
+	}
+	
 	private int positionSort(int top) {
 		if (mCount > 6) {
 			mRow = mCount / 6;
@@ -328,7 +358,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 					
 				}
 				
-				
+				mCurrentRow = addRowCount;
 				//mCurrentRow = addRowCount;
 				Log.d("CircleImage3DSwitchView", "addRowCount = " + addRowCount );
 				Log.d("CircleImage3DSwitchView", "mCurrentRow = " + mCurrentRow );
@@ -616,7 +646,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 	 */
 	private void beginScroll(int startX, int startY, int dx, int dy,
 			final int action) {
-		int duration = (int) (800f / mImageHeight * Math.abs(dy));
+		int duration = (int) (500f / mImageHeight * Math.abs(dy));
 		mScroller.startScroll(startX, startY, dx, dy, duration);
 		invalidate();
 		handler.postDelayed(new Runnable() {

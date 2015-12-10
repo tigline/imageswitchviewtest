@@ -55,6 +55,7 @@ public class CircleImage3DView extends ImageView {
     private final Paint mBitmapPaint = new Paint();
     private final Paint mBorderPaint = new Paint();
     private final Paint mTextPaint = new Paint();
+    private final Paint mTextAssestPaint = new Paint();
     private FontMetrics fm;
     private int mBorderColor = DEFAULT_BORDER_COLOR;
     private int mBorderWidth = DEFAULT_BORDER_WIDTH;
@@ -111,15 +112,13 @@ public class CircleImage3DView extends ImageView {
 	
 	private String itemText;
 	
-	private String itemTextUpp;
-	
-	private String itemTextDown;
-	
 	private int textCenterX;
 	
 	private float scale = 1f;
 	
-	private boolean drawSecondLine = false;
+	private boolean changeDraw = false;
+	
+	
 	
 	private static float itemsScale [] = new float [6];
 	public CircleImage3DView(Context context) {
@@ -200,11 +199,6 @@ public class CircleImage3DView extends ImageView {
 		
 		mIndex = index;
 		itemsScale = scales;
-		//yOffset = location;
-
-
-//		yOffset = dy;
-//		Log.d("CircleImage3DView", "mScrollY = " + scrollX);
 
 	}
 
@@ -297,15 +291,144 @@ public class CircleImage3DView extends ImageView {
 			canvas.concat(mShaderMatrix);   			
         	canvas.drawCircle(getWidth() / 2, getHeight() / 2, mDrawableRadius, mBitmapPaint);
             canvas.drawCircle(getWidth() / 2, getHeight() / 2, mBorderRadius, mBorderPaint); 
-            canvas.drawText(itemTextUpp, textCenterX, getHeight() - fm.bottom, mTextPaint);
-            if (drawSecondLine) {
-            	canvas.drawText(itemTextUpp, textCenterX, getHeight() - 5*fm.bottom, mTextPaint);
+            if (changeDraw) {
+            	myDrawText(canvas);            	           	
+			}else {				
+				canvas.drawText(itemText, textCenterX, getHeight() - 3*fm.bottom, mTextAssestPaint);
 			}
+            
             
         }
 
 	}
+    private void setup() {
+    	//Log.d("CircleImage3DView", "setup()" );
+        if (!mReady) {
+            mSetupPending = true;
+            return;
+        }
 
+        if (mBitmap == null) {
+            return;
+        }
+
+        mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+
+        mBitmapPaint.setAntiAlias(true);
+        mBitmapPaint.setShader(mBitmapShader);
+
+        mBorderPaint.setStyle(Paint.Style.STROKE);
+        mBorderPaint.setAntiAlias(true);
+        mBorderPaint.setColor(mBorderColor);
+        mBorderPaint.setStrokeWidth(mBorderWidth); //设置空心线宽
+ 
+        mBitmapHeight = mBitmap.getHeight() - IMAGE_PADDING;
+        mBitmapWidth = mBitmap.getWidth() - IMAGE_PADDING;  
+
+        mBorderRect.set(0, 0, getWidth() - IMAGE_PADDING, getHeight() - IMAGE_PADDING);
+        mBorderRadius = Math.min((mBorderRect.height() - mBorderWidth) / 2, (mBorderRect.width() - mBorderWidth) / 2);
+
+        mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
+        mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
+        
+        mTextPaint.setTextSize(30);
+        mTextPaint.setColor(Color.WHITE);
+        mTextAssestPaint.setTextSize(30);
+        mTextAssestPaint.setColor(Color.WHITE);
+        fm = mTextPaint.getFontMetrics();
+        
+        int textLenth = getTextWidth(mTextAssestPaint, itemText);
+        textCenterX = getWidth()/2;
+        
+        if (textLenth < getWidth()) {
+        	mTextAssestPaint.setTextAlign(Align.CENTER);
+        	changeDraw = false;
+		}else{
+			changeDraw = true;
+			mTextPaint.setTextAlign(Align.LEFT);
+		}
+        
+        
+    	
+        updateShaderMatrix(); 
+        invalidate();  //刷新数据调用onDraw()重绘 
+    }
+    
+    private void updateShaderMatrix() {
+    	//Log.d("CircleImage3DView", "updateShaderMatrix()" );
+        float scale;
+        
+        float dx = 0;
+        float dy = 0;
+
+        mShaderMatrix.set(null);
+
+        //缩放形式为填充
+
+        if (mBitmapWidth * mDrawableRect.height() > mDrawableRect.width() * mBitmapHeight) {
+            scale = mDrawableRect.height() / (float) mBitmapHeight;
+            dx = (mDrawableRect.width() - mBitmapWidth * scale) * 0.5f;
+        } else {
+            scale = mDrawableRect.width() / (float) mBitmapWidth;
+            dy = (mDrawableRect.height() - mBitmapHeight * scale) * 0.5f;
+        }
+        //XY 轴缩放
+        mShaderMatrix.setScale(scale, scale);
+        //缩放后移动实际指定距离
+        mShaderMatrix.postTranslate((int) (dx + 0.5f) + mBorderWidth, (int) (dy + 0.5f) + mBorderWidth);
+        
+        mBitmapShader.setLocalMatrix(mShaderMatrix);
+    }
+
+    public void setItemScale(float itemScale) {
+		// TODO Auto-generated method stub
+		scale = itemScale;
+	}
+
+	public void myDrawText(Canvas canvas) {
+		float textShowWidth = getWidth() * 0.8f;
+		char[] textCharArray = itemText.toCharArray();
+		String endString = "...";
+		char[] endChar = endString.toCharArray();
+		float height = getHeight() - 4*fm.bottom; 
+		float drawedWidth = 0;  
+	    float charWidth;
+	    float endCharWirh;
+	    boolean drawadd = false;
+	    boolean drawend = false;
+	    int textLenth = getTextWidth(mTextPaint, itemText);
+	    if (textLenth > textShowWidth * 2) {
+	    	drawend = true;
+		}
+        for (int i = 0; i < textCharArray.length; i++) {  
+            charWidth = mTextPaint.measureText(textCharArray, i, 1);  
+              
+            if (textShowWidth - drawedWidth < charWidth) {
+            	drawadd = true;
+                height += 30;
+                drawedWidth = 0;  
+            }  
+            if (drawadd && drawend) {
+            	if ((textShowWidth - drawedWidth) > 30 && (textShowWidth - drawedWidth) < 60) {
+    				for (int j = 0; j < endChar.length; j++) {
+    					endCharWirh = mTextPaint.measureText(endChar, j, 1);
+    					canvas.drawText(endChar, j, 1, drawedWidth + 32,  
+    		            		height, mTextPaint);
+    					drawedWidth += endCharWirh;
+    				}
+    				return;
+    			}
+			}
+            canvas.drawText(textCharArray, i, 1, drawedWidth + 32,  
+            		height, mTextPaint);  
+            drawedWidth += charWidth;
+             
+        }  
+	        //setHeight((lineCount + 1) * (int) textSize + 5);  
+	}  
+	
+
+	
 	public static int getTextWidth(Paint paint, String str) {  
         int iRet = 0;  
         if (str != null && str.length() > 0) {  
@@ -510,97 +633,7 @@ public class CircleImage3DView extends ImageView {
 	}
 	
 	
-    private void setup() {
-    	//Log.d("CircleImage3DView", "setup()" );
-        if (!mReady) {
-            mSetupPending = true;
-            return;
-        }
 
-        if (mBitmap == null) {
-            return;
-        }
-
-        mBitmapShader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-
-        mBitmapPaint.setAntiAlias(true);
-        mBitmapPaint.setShader(mBitmapShader);
-
-        mBorderPaint.setStyle(Paint.Style.STROKE);
-        mBorderPaint.setAntiAlias(true);
-        mBorderPaint.setColor(mBorderColor);
-        mBorderPaint.setStrokeWidth(mBorderWidth); //设置空心线宽
- 
-        mBitmapHeight = mBitmap.getHeight() - IMAGE_PADDING;
-        mBitmapWidth = mBitmap.getWidth() - IMAGE_PADDING;  
-
-        mBorderRect.set(0, 0, getWidth() - IMAGE_PADDING, getHeight() - IMAGE_PADDING);
-        mBorderRadius = Math.min((mBorderRect.height() - mBorderWidth) / 2, (mBorderRect.width() - mBorderWidth) / 2);
-
-        mDrawableRect.set(mBorderWidth, mBorderWidth, mBorderRect.width() - mBorderWidth, mBorderRect.height() - mBorderWidth);
-        mDrawableRadius = Math.min(mDrawableRect.height() / 2, mDrawableRect.width() / 2);
-        
-        mTextPaint.setTextSize(30);
-        mTextPaint.setColor(Color.WHITE);
-        
-        fm = mTextPaint.getFontMetrics();
-        
-        int textLenth = getTextWidth(mTextPaint, itemText);
-        
-        if (textLenth > getWidth()) {
-        	drawSecondLine = true;
-        	if (textLenth > getWidth() * 2) {
-        		char bufU[] = new char [10];
-        		char bufD[] = new char [8];
-            	String end = "...";
-            	
-            	itemText.getChars(0, 9, bufU, 0);
-            	itemTextUpp = String.valueOf(bufU);
-//            	itemText.getChars(11, 8, bufD, 0);
-//            	itemTextDown = String.valueOf(bufD) + end;          	
-			} else {
-				
-			}
-		}else{
-			
-		}
-        
-        textCenterX = getWidth()/2;
-    	mTextPaint.setTextAlign(Align.CENTER);
-        updateShaderMatrix(); 
-        invalidate();  //刷新数据调用onDraw()重绘 
-    }
-    
-    private void updateShaderMatrix() {
-    	//Log.d("CircleImage3DView", "updateShaderMatrix()" );
-        float scale;
-        
-        float dx = 0;
-        float dy = 0;
-
-        mShaderMatrix.set(null);
-
-        //缩放形式为填充
-
-        if (mBitmapWidth * mDrawableRect.height() > mDrawableRect.width() * mBitmapHeight) {
-            scale = mDrawableRect.height() / (float) mBitmapHeight;
-            dx = (mDrawableRect.width() - mBitmapWidth * scale) * 0.5f;
-        } else {
-            scale = mDrawableRect.width() / (float) mBitmapWidth;
-            dy = (mDrawableRect.height() - mBitmapHeight * scale) * 0.5f;
-        }
-        //XY 轴缩放
-        mShaderMatrix.setScale(scale, scale);
-        //缩放后移动实际指定距离
-        mShaderMatrix.postTranslate((int) (dx + 0.5f) + mBorderWidth, (int) (dy + 0.5f) + mBorderWidth);
-        
-        mBitmapShader.setLocalMatrix(mShaderMatrix);
-    }
-
-    public void setItemScale(float itemScale) {
-		// TODO Auto-generated method stub
-		scale = itemScale;
-	}
 
 
 }
