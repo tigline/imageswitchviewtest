@@ -4,9 +4,6 @@ package com.example.imageswitchviewtest;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
-
 import android.R.integer;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -176,7 +173,7 @@ public class CircleImage3DSwitchView extends ViewGroup {
 		for (int i = 0; i < 6; i++) {
 			CircleImage3DView circle = (CircleImage3DView) LayoutInflater.from(getContext()).inflate(R.layout.circle_item, null);
 
-			circle.setCircleItemText("万万没想到");
+			circle.setCircleItemText("万万没想到之大话西游篇王大锤叫兽易小星刘循子墨赵丽颖陈柏霖");
 
 			if (i < 6) {
 				circle.setImageResource(R.drawable.row1);
@@ -214,14 +211,16 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				delete = mCount % 6;
 			}
 			CANSCROLLTOPREV = true;
-			for (int i = mCount-delete; i < mCount; i++) {
-				CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
-				removeView(circle);			
-			}
+//			for (int i = mCount-delete; i < mCount; i++) {
+//				CircleImage3DView circle = (CircleImage3DView) circleList.get(i);
+//				removeView(circle);			
+//			}
 			
 			
 			Log.d("CircleImage3DSwitchView", "delete = " + delete);
 			for (int i = 0; i < delete; i++) {
+				CircleImage3DView circle = (CircleImage3DView) circleList.get(circleList.size() - 1);
+				removeView(circle);	
 				circleList.remove(circleList.size()-1);
 				videoList.remove(circleList.size()-1);
 			}
@@ -307,7 +306,9 @@ public class CircleImage3DSwitchView extends ViewGroup {
 				top = top - mImageHeight;
 			}
 			if (CANSCROLLTOPREV) {					
-				if (mCount > 12) {
+				if (mCount > 18) {
+					top = top - 3*mImageHeight;
+				}else if(mCount > 12) {
 					top = top - 2*mImageHeight;
 				}else if(mCount > 6) {
 					top = top -mImageHeight;
@@ -355,7 +356,6 @@ public class CircleImage3DSwitchView extends ViewGroup {
 						mLeft = mCount;
 						//top += mImageHeight;
 					}
-					
 				}
 				
 				mCurrentRow = addRowCount;
