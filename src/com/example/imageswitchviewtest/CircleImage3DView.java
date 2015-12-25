@@ -46,7 +46,7 @@ public class CircleImage3DView extends ImageView {
     private static final int COLORDRAWABLE_DIMENSION = 1;
 
     private static final int DEFAULT_BORDER_WIDTH = 0;
-    private static final int DEFAULT_BORDER_COLOR = Color.RED;
+    private static final int DEFAULT_BORDER_COLOR = 0XA9F9E9;
 
     private final RectF mDrawableRect = new RectF();
     private final RectF mBorderRect = new RectF();
